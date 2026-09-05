@@ -36,7 +36,7 @@
 		<string>Fonts/IBMPlexMono-Regular.ttf</string>
 	</array>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>SoundPuddle findet und verbindet iPhones im selben Raum für lokale Silent-Disco-Sessions — ohne Internet.</string>
+	<string>SoundPuddle findet und verbindet iPhones im selben Raum für lokale Schwarm-Sessions — ohne Internet.</string>
 	<key>NSBonjourServices</key>
 	<array>
 		<string>_soundpuddle._tcp</string>

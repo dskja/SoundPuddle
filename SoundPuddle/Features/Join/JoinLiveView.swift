@@ -15,6 +15,9 @@ struct JoinLiveView: View {
             Text(model.sessionTitle)
                 .font(Theme.body)
                 .foregroundStyle(Theme.textMuted)
+            Text(model.roleLabel)
+                .font(Theme.mono)
+                .foregroundStyle(Theme.mist)
             Text(model.sessionElapsedLabel)
                 .font(Theme.mono)
                 .foregroundStyle(Theme.mist)
@@ -46,34 +49,51 @@ struct JoinLiveView: View {
                         selected: model.isMuted
                     ) { model.toggleMute() }
                 }
-                Slider(value: Binding(
-                    get: { Double(model.joinVolume) },
-                    set: { model.setJoinVolume(Float($0)) }
-                ), in: 0...1)
+                Slider(
+                    value: Binding(
+                        get: { Double(model.joinVolume) },
+                        set: { model.setJoinVolume(Float($0)) }
+                    ),
+                    in: 0...1
+                )
                 .tint(Theme.lime)
                 .disabled(model.isMuted)
             }
             .padding(14)
             .glassPanel(cornerRadius: 16)
 
-            if !model.rosterNames.isEmpty {
+            if !model.playlistTracks.isEmpty {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(String(localized: "join.roster"))
+                    Text(String(localized: "schwarm.voteNext"))
                         .font(Theme.mono)
                         .foregroundStyle(Theme.textMuted)
-                    Text(model.rosterNames.joined(separator: " · "))
-                        .font(Theme.body)
-                        .foregroundStyle(Theme.textPrimary)
+                    ForEach(model.playlistTracks.prefix(4)) { track in
+                        Button {
+                            model.castVote(trackID: track.id)
+                        } label: {
+                            HStack {
+                                Text(track.title)
+                                    .font(Theme.body)
+                                    .foregroundStyle(Theme.textPrimary)
+                                Spacer()
+                                Text("\(track.votes)")
+                                    .font(Theme.mono)
+                                    .foregroundStyle(Theme.mist)
+                            }
+                        }
+                        .buttonStyle(.plain)
+                    }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(14)
                 .glassPanel(cornerRadius: 14)
             }
 
-            if model.isLiveContainer && model.linkQuality != .good {
-                Text(String(localized: "livecontainer.tip.audio"))
-                    .font(Theme.mono)
-                    .foregroundStyle(Theme.sand)
+            if !model.rosterNames.isEmpty {
+                Text(model.rosterNames.joined(separator: " · "))
+                    .font(Theme.body)
+                    .foregroundStyle(Theme.textPrimary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
 
             if let err = model.lastError {

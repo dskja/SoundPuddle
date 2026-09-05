@@ -2,6 +2,7 @@ import SwiftUI
 
 struct JoinDiscoverView: View {
     @Environment(AppModel.self) private var model
+    @State private var dragOffset: CGSize = .zero
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -18,14 +19,40 @@ struct JoinDiscoverView: View {
                 LiveContainerBanner()
             }
 
+            Text(String(localized: "join.dragHint"))
+                .font(Theme.body)
+                .foregroundStyle(Theme.textMuted)
+
+            ZStack {
+                Circle()
+                    .strokeBorder(Theme.lime.opacity(0.35 + model.dragProgress * 0.5), lineWidth: 2)
+                    .frame(width: 120, height: 120)
+                    .scaleEffect(0.85 + model.dragProgress * 0.2)
+                BrandMark(compact: true)
+                    .offset(dragOffset)
+                    .gesture(
+                        DragGesture()
+                            .onChanged { value in
+                                dragOffset = value.translation
+                                let dist = hypot(value.translation.width, value.translation.height)
+                                model.setDragProgress(max(0, 1 - dist / 160))
+                            }
+                            .onEnded { _ in
+                                withAnimation(Motion.snappy) { dragOffset = .zero }
+                                if model.proximityReady, let first = model.discovered.first {
+                                    model.join(peer: first.peer, advertisement: first.ad)
+                                }
+                                model.setDragProgress(0)
+                            }
+                    )
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 24)
+
             if model.discovered.isEmpty {
-                VStack(alignment: .leading, spacing: 8) {
-                    BrandMark(compact: true)
-                    Text(String(localized: "join.empty"))
-                        .font(Theme.body)
-                        .foregroundStyle(Theme.textMuted)
-                }
-                .padding(.top, 40)
+                Text(String(localized: "join.empty"))
+                    .font(Theme.body)
+                    .foregroundStyle(Theme.textMuted)
             } else {
                 ScrollView {
                     LazyVStack(spacing: 0) {
@@ -37,7 +64,7 @@ struct JoinDiscoverView: View {
                                     Text(item.ad.title)
                                         .font(Theme.bodyMedium)
                                         .foregroundStyle(Theme.textPrimary)
-                                    Text("\(String(localized: String.LocalizationValue(item.ad.mode.titleKey))) · \(item.peer.displayName)")
+                                    Text(item.peer.displayName)
                                         .font(Theme.mono)
                                         .foregroundStyle(Theme.textMuted)
                                 }
@@ -45,8 +72,6 @@ struct JoinDiscoverView: View {
                                 .padding(.vertical, 14)
                             }
                             .buttonStyle(.plain)
-                            .opacity(1)
-                            .animation(Motion.route.delay(Double(index) * 0.04), value: model.discovered.count)
                             if index < model.discovered.count - 1 {
                                 Divider().overlay(Theme.strokeGhost)
                             }
