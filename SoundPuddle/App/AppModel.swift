@@ -254,9 +254,15 @@ final class AppModel {
                 isStreamPaused = true
                 sessionActive = true
                 sessionStartedAt = Date()
-             )
+                holdIdleTimer(true)
+                rebalanceField()
+                broadcastPlaylist()
+                startPingLoop()
+                startElapsedTick()
+                route = .hostLive
+                Haptics.success()
             } catch {
-                lastError: String = error.localizedDescription
+                lastError = error.localizedDescription
                 teardownAll()
                 route = .hostSetup
                 Haptics.warning()
@@ -295,7 +301,7 @@ final class AppModel {
     }
 
     func toggleHostMonitor() {
-         hostMonitorMuted.toggle()
+        hostMonitorMuted.toggle()
         capture.monitorMuted = hostMonitorMuted
         Haptics.light()
     }
@@ -334,7 +340,7 @@ final class AppModel {
                 mesh.sendControl(.playSchedule(.init(trackId: next.id, startHostMs: startAt)), to: nil)
                 sendStreamStart()
             } catch {
-                lastError: String = error.localizedDescription
+                lastError = error.localizedDescription
             }
         }
         Haptics.success()
@@ -344,7 +350,10 @@ final class AppModel {
 
     func startBrowsing() {
         discovered = []
-        mesh.startBrowsing()
+        Task {
+            await networkPrimer.primeAndWait()
+            mesh.startBrowsing()
+        }
     }
 
     func join(peer: MeshPeer, advertisement: SessionAdvertisement) {
@@ -357,4 +366,165 @@ final class AppModel {
         sessionMode = advertisement.mode.isSchwarm ? .schwarm : advertisement.mode
         route = .joinConnecting
         mesh.invite(peer)
-        joinTime
+        joinTimeoutTask?.cancel()
+        joinTimeoutTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 20_000_000_000)
+            guard let self, !Task.isCancelled else { return }
+            if self.route == .joinConnecting || self.route == .joinCalibrate {
+                self.lastError = AppError.timeout.errorDescription
+                self.teardownAll()
+                self.route = .joinBrowse
+                self.startBrowsing()
+                Haptics.warning()
+            }
+        }
+    }
+
+    func leaveSession() {
+        mesh.sendControl(.goodbye(reason: "leave"), to: nil)
+        teardownAll()
+        route = .home
+    }
+
+    func toggleMute() {
+        isMuted.toggle()
+        applyJoinVolume()
+        Haptics.light()
+    }
+
+    func setJoinVolume(_ value: Float) {
+        joinVolume = max(0, min(1, value))
+        applyJoinVolume()
+    }
+
+    func castVote(trackID: String) {
+        playlist.vote(trackID: trackID, from: localPeerKey)
+        syncPlaylistUI()
+        mesh.sendControl(.vote(.init(trackId: trackID, peerId: localPeerKey)), to: nil)
+        Haptics.light()
+    }
+
+    func handleScenePhase(_ phase: ScenePhase) {
+        switch phase {
+        case .active:
+            if sessionActive { holdIdleTimer(true) }
+            networkPrimer.prime()
+        case .inactive, .background:
+            break
+        @unknown default:
+            break
+        }
+    }
+
+    // MARK: Event loop
+
+    private func listen() {
+        eventTask?.cancel()
+        eventTask = Task { [weak self] in
+            guard let self else { return }
+            for await event in self.mesh.events {
+                if Task.isCancelled { break }
+                self.handle(event)
+            }
+        }
+    }
+
+    private func handle(_ event: MeshEvent) {
+        switch event {
+        case .peerDiscovered(let peer, let ad):
+            if let ad {
+                discovered.removeAll { $0.peer.id == peer.id }
+                discovered.append((peer, ad))
+            }
+        case .peerLost(let id):
+            discovered.removeAll { $0.peer.id == id || $0.peer.displayName == id }
+            peers.removeAll { $0.id == id || $0.displayName == id }
+            if route == .hostLive { rebalanceField() }
+        case .peerStateChanged:
+            peers = mesh.connectedPeers
+        case .connected(let peer):
+            peers = mesh.connectedPeers
+            if route == .joinConnecting {
+                mesh.sendControl(
+                    .hello(.init(
+                        app: "0.0.3",
+                        peer: displayName,
+                        fmtPref: AudioFormatSpec.canonical.token,
+                        deviceModel: deviceProfile.model,
+                        speakerQuality: deviceProfile.speakerQuality
+                    )),
+                    to: [peer]
+                )
+                startClockSyncLoop(isHost: false)
+            } else if route == .hostLive {
+                if !welcomedPeerIDs.contains(peer.id) {
+                    welcomedPeerIDs.insert(peer.id)
+                    sendWelcome(to: peer)
+                    broadcastRoster()
+                    rebalanceField()
+                    broadcastPlaylist()
+                    if isStreaming && !isStreamPaused {
+                        sendStreamStart(to: [peer])
+                    }
+                    Haptics.light()
+                }
+            }
+        case .disconnected:
+            peers = mesh.connectedPeers
+            if route == .joinLive || route == .joinConnecting || route == .joinCalibrate {
+                lastError = AppError.hostGone.errorDescription
+                teardownAll()
+                route = .joinBrowse
+                startBrowsing()
+                Haptics.warning()
+            } else if route == .hostLive {
+                welcomedPeerIDs = Set(peers.map(\.id))
+                broadcastRoster()
+                rebalanceField()
+            }
+        case .control(let message, let from):
+            handleControl(message, from: from)
+        case .audio(let packet, _):
+            if (route == .joinLive || route == .joinCalibrate) && !isMuted {
+                playback.enqueue(packet: packet)
+            }
+        case .error(let error):
+            lastError = error.errorDescription
+        }
+    }
+
+    private func handleControl(_ message: ControlMessage, from: String) {
+        switch message {
+        case .hello:
+            if route == .hostLive,
+               let peer = peers.first(where: { $0.displayName == from || $0.id == from }),
+               !welcomedPeerIDs.contains(peer.id) {
+                welcomedPeerIDs.insert(peer.id)
+                sendWelcome(to: peer)
+                broadcastRoster()
+                rebalanceField()
+                broadcastPlaylist()
+                if isStreaming && !isStreamPaused {
+                    sendStreamStart(to: [peer])
+                }
+            }
+        case .welcome(let payload):
+            sessionTitle = payload.title
+            if let mode = SessionMode(rawValue: payload.mode) {
+                sessionMode = mode.isSchwarm ? .schwarm : mode
+            }
+            enterJoinCalibrate()
+            startClockSyncLoop(isHost: false)
+        case .streamStart:
+            beginJoinPlayback()
+        case .streamStop(let reason):
+            playback.stop()
+            isStreaming = false
+            isStreamPaused = (reason == "pause")
+        case .reject(let code):
+            lastError = (code == .full ? AppError.sessionFull : AppError.protocolMismatch).errorDescription
+            teardownAll()
+            route = .joinBrowse
+            startBrowsing()
+            Haptics.warning()
+        case .goodb
