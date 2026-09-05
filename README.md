@@ -1,34 +1,31 @@
 # SoundPuddle
 
-Temporäre Silent-Discos: lokales Audio-Mesh ohne Internet (Wi‑Fi P2P + Bluetooth / MultipeerConnectivity).
+Lokale Silent-Disco Sessions über MultipeerConnectivity — ohne Internet.
 
-## Features
+**Version 0.0.2**
 
-- Host/Join Silent-Disco Sessions im selben Raum
-- Mikrofon- oder Datei-Quelle (PCM 16-bit mono 24 kHz)
-- Jitter-Buffer, Link-Qualität, Display-Name
-- LiveContainer-Anpassungen (weiche Encryption, UX-Tips, sandboxed File-Import)
+## Neu in 0.0.2
+
+- Liquid-Glass UI (Polyfill für iOS 17+, optisch an iOS 26 angelehnt)
+- Host: Pause/Resume, Monitor-Mute für Datei-Preview
+- Join: Lautstärke + Mute, Roster, RTT-Anzeige, Session-Timer
+- Stabilität: File-Capture Realtime-Rate, Idle-Timer-Idempotenz, Handshake-Timeout bis Live,
+  Ping/Pong unicast, stabile Peer-IDs, Stereo-Downmix, Jitter Wrap-Around,
+  Audio-Interruption Recovery, LiveContainer-Härtung
 
 ## LiveContainer
 
-SoundPuddle läuft als Guest-App in [LiveContainer](https://github.com/LiveContainer/LiveContainer):
-
-1. **Berechtigungen** für Lokales Netzwerk, Mikrofon und Bluetooth in der **LiveContainer-Host-App** erteilen (nicht nur in SoundPuddle).
-2. Für Audio-Dateien **Fix File Picker** in LiveContainer aktivieren.
-3. **Multitask-Modus vermeiden** — VoIP/Mikrofon-Audio bricht dort oft ab; SoundPuddle als primäre Guest-App nutzen.
-4. Soft-Multipeer-Encryption ist in LiveContainer automatisch aktiv.
-
-Unsigned IPA: GitHub Actions Artifact `SoundPuddle-unsigned-ipa` am Branch `dskjasoundpuddle-61ba`.
+1. Local Network / Mikrofon / Bluetooth in der **LiveContainer-Host-App** erlauben
+2. Fix File Picker aktivieren (Datei-Import)
+3. Kein Multitask-Modus für Mic/VoIP-Audio
+4. Soft-Encryption ist in LiveContainer automatisch aktiv
 
 ## Build
 
 ```bash
-# Fonts werden in CI geladen; lokal analog project.yml / workflow
 xcodegen generate
 xcodebuild -scheme SoundPuddle -destination 'generic/platform=iOS' \
   CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build
 ```
 
-## Version
-
-1.1.0 — LiveContainer-Support, Bugfixes, Stabilitäts- und UX-Polishes.
+Unsigned IPA: GitHub Actions Artifact am Branch `dskjasoundpuddle-61ba`.
