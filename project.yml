@@ -48,9 +48,10 @@ targets:
           - Fonts/IBMPlexSans-Regular.ttf
           - Fonts/IBMPlexSans-Medium.ttf
           - Fonts/IBMPlexMono-Regular.ttf
-        NSLocalNetworkUsageDescription: SoundPuddle findet und verbindet iPhones im selben Raum für lokale Silent-Disco-Sessions — ohne Internet.
+        NSLocalNetworkUsageDescription: "SoundPuddle braucht lokales Netzwerk (Bonjour), um iPhones im selben Raum für Schwarm-Sessions zu finden — ohne Internet. In LiveContainer muss Local Network in der Host-App erlaubt sein."
         NSBonjourServices:
           - _soundpuddle._tcp
+          - _soundpuddle._udp
         NSBluetoothAlwaysUsageDescription: Bluetooth hilft, Sessions aufzubauen, wenn kein gemeinsames WLAN verfügbar ist.
         NSMicrophoneUsageDescription: Das Mikrofon wird nur genutzt, wenn du eine Session hostest und Audio teilst.
         UIBackgroundModes:
