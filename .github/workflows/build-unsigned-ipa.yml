@@ -2,21 +2,23 @@ name: Build Unsigned IPA
 
 on:
   push:
-    branches:
-      - main
-      - dskja*
+    branches: [main, "dskja*"]
   workflow_dispatch:
 
 concurrency:
   group: unsigned-ipa-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: write
+  actions: read
+
 jobs:
   build-unsigned-ipa:
     name: SoundPuddle unsigned IPA
     runs-on: macos-15
-    permissions:
-      contents: write
+    timeout-minutes: 45
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -68,6 +70,7 @@ jobs:
           raw = b"".join(rows)
           png = b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", W, H, 8, 2, 0, 0, 0)) + chunk(b"IDAT", zlib.compress(raw, 9)) + chunk(b"IEND", b"")
           out = Path("SoundPuddle/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png")
+          out.parent.mkdir(parents=True, exist_ok=True)
           out.write_bytes(png)
           print("wrote", out, out.stat().st_size)
           PY
@@ -76,12 +79,11 @@ jobs:
         run: brew install xcodegen
 
       - name: Generate Xcode project
-        run: |
-          set -euo pipefail
-          xcodegen generate
-          xcodebuild -list -project SoundPuddle.xcodeproj | tee xcode-list.txt
+        run: xcodegen generate
 
       - name: Build Release iphoneos (unsigned)
+        id: build
+        continue-on-error: true
         run: |
           set -euo pipefail
           set +e
@@ -95,6 +97,7 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
+            CODE_SIGN_ENTITLEMENTS="" \
             DEVELOPMENT_TEAM="" \
             CURRENT_PROJECT_VERSION=${{ github.run_number }} \
             clean build 2>&1 | tee build-unsigned.log
@@ -103,39 +106,49 @@ jobs:
           {
             echo "## xcodebuild errors"
             echo '```'
-            grep -nE "error:|fatal error:|BUILD FAILED|cannot |unable to|not found" build-unsigned.log || echo "(no matching error lines)"
-            echo '```'
-            echo
-            echo "## log tail"
-            echo '```'
-            tail -n 120 build-unsigned.log
+            grep -nE "error:|fatal error:|BUILD FAILED|Command .* failed" build-unsigned.log | head -n 200 || echo "(no matching error lines)"
             echo '```'
           } | tee -a "$GITHUB_STEP_SUMMARY"
+          grep -E "error:|fatal error:" build-unsigned.log | head -n 50 | while IFS= read -r line; do
+            echo "::error::$line"
+          done || true
           exit $STATUS
 
-      - name: Publish build errors to branch
-        if: failure()
+      - name: Publish build errors to repo
+        if: steps.build.outcome == 'failure'
         run: |
           set -euo pipefail
+          mkdir -p ci
           {
-            echo "# CI build errors from ${GITHUB_SHA}"
+            echo "# SoundPuddle CI build errors"
             echo
-            echo "## Matched error lines"
-            grep -nE "error:|fatal error:|BUILD FAILED|cannot |unable to|not found" build-unsigned.log || echo "(none)"
+            echo "- SHA: \`${GITHUB_SHA}\`"
+            echo "- Run: ${GITHUB_RUN_ID}"
+            echo "- Xcode: $(head -n1 xcode-version.txt 2>/dev/null || true)"
             echo
-            echo "## Full log tail"
+            echo "## Matching lines"
+            echo '```'
+            grep -nE "error:|fatal error:|BUILD FAILED|Command .* failed" build-unsigned.log | head -n 200 || true
+            echo '```'
+            echo
+            echo "## Tail"
+            echo '```'
             tail -n 200 build-unsigned.log || true
-            echo
-            echo "## xcodebuild -list"
-            cat xcode-list.txt || true
-          } > ci-errors.txt
+            echo '```'
+          } > ci/last-build-errors.md
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add ci-errors.txt
-          git commit -m "CI: capture unsigned build errors [skip ci]" || exit 0
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          git add ci/last-build-errors.md
+          if git diff --cached --quiet; then
+            echo "No error file changes"
+          else
+            git commit -m "ci: capture build errors for ${GITHUB_SHA:0:7} [skip ci]"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+          exit 1
 
       - name: Package unsigned IPA
+        if: steps.build.outcome == 'success'
         run: |
           set -euo pipefail
           APP="build/Build/Products/Release-iphoneos/SoundPuddle.app"
@@ -148,6 +161,7 @@ jobs:
           echo "IPA_SIZE=$(wc -c < SoundPuddle-unsigned.ipa | tr -d ' ')" >> "$GITHUB_ENV"
 
       - name: Job summary
+        if: steps.build.outcome == 'success'
         run: |
           {
             echo "## SoundPuddle unsigned IPA"
@@ -159,30 +173,13 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload IPA artifact
+        if: steps.build.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
           name: SoundPuddle-unsigned-ipa
           path: SoundPuddle-unsigned.ipa
           if-no-files-found: error
           retention-days: 14
-
-      - name: Fast-forward main
-        if: github.ref == 'refs/heads/dskjasoundpuddle-61ba'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-          # Update ref via API so commits that touch workflows are accepted.
-          HTTP=$(curl -sS -o /tmp/ff.json -w "%{http_code}" -X PATCH \
-            -H "Authorization: Bearer ${GH_TOKEN}" \
-            -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/heads/main" \
-            -d "{\"sha\":\"${GITHUB_SHA}\",\"force\":false}")
-          cat /tmp/ff.json
-          echo
-          test "$HTTP" = "200"
-          echo "main fast-forwarded to ${GITHUB_SHA}"
 
       - name: Upload build log
         if: always()
@@ -193,7 +190,5 @@ jobs:
             build-unsigned.log
             xcode-version.txt
             ios-sdk-version.txt
-            ci-errors.txt
-            xcode-list.txt
           if-no-files-found: warn
           retention-days: 14
