@@ -1,7 +1,7 @@
 # SoundPuddle CI build errors
 
-- SHA: `5b97c907de2fed3e647f95b58bf41259bbd697f7`
-- Run: 33953608777
+- SHA: `aee2c123cfe2d18cc5de7dba6f7dbb620bd8f667`
+- Run: 33953748977
 - Xcode: Xcode 16.4
 
 ## Matching lines
@@ -30,9 +30,9 @@ GatherProvisioningInputs
 
 CreateBuildDescription
 
-ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/usr/bin/xcstringstool compile --dry-run --output-directory /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Resources/Localizable.xcstrings
-
 ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/usr/bin/actool --print-asset-tag-combinations --output-format xml1 /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Resources/Assets.xcassets
+
+ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/usr/bin/xcstringstool compile --dry-run --output-directory /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Resources/Localizable.xcstrings
 
 ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.5.sdk -x c -c /dev/null
 
@@ -42,12 +42,8 @@ ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/X
 
 ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
 
-Build description signature: fa869c246b5c0f548ee67f25c2844d0c
-Build description path: /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/XCBuildData/fa869c246b5c0f548ee67f25c2844d0c.xcbuilddata
-ClangStatCache /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.5.sdk /Users/runner/work/SoundPuddle/SoundPuddle/build/SDKStatCaches.noindex/iphoneos18.5-22F76-a529daf784b3616c7c04a36aeb7f5c05.sdkstatcache
-    cd /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle.xcodeproj
-    /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.5.sdk -o /Users/runner/work/SoundPuddle/SoundPuddle/build/SDKStatCaches.noindex/iphoneos18.5-22F76-a529daf784b3616c7c04a36aeb7f5c05.sdkstatcache
-
+Build description signature: 82f6d6dbfc74248490876a21243d5ab1
+Build description path: /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/XCBuildData/82f6d6dbfc74248490876a21243d5ab1.xcbuilddata
 CreateBuildDirectory /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products
     cd /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle.xcodeproj
     builtin-create-build-directory /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products
@@ -56,13 +52,17 @@ CreateBuildDirectory /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Inte
     cd /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle.xcodeproj
     builtin-create-build-directory /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex
 
-WriteAuxiliaryFile /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle-746e37d11dd0800f6f83b801cdcfb2ca-VFS-iphoneos/all-product-headers.yaml
+ClangStatCache /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.5.sdk /Users/runner/work/SoundPuddle/SoundPuddle/build/SDKStatCaches.noindex/iphoneos18.5-22F76-a529daf784b3616c7c04a36aeb7f5c05.sdkstatcache
     cd /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle.xcodeproj
-    write-file /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle-746e37d11dd0800f6f83b801cdcfb2ca-VFS-iphoneos/all-product-headers.yaml
+    /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.5.sdk -o /Users/runner/work/SoundPuddle/SoundPuddle/build/SDKStatCaches.noindex/iphoneos18.5-22F76-a529daf784b3616c7c04a36aeb7f5c05.sdkstatcache
 
 CreateBuildDirectory /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products/Release-iphoneos
     cd /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle.xcodeproj
     builtin-create-build-directory /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products/Release-iphoneos
+
+WriteAuxiliaryFile /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle-746e37d11dd0800f6f83b801cdcfb2ca-VFS-iphoneos/all-product-headers.yaml
+    cd /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle.xcodeproj
+    write-file /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle-746e37d11dd0800f6f83b801cdcfb2ca-VFS-iphoneos/all-product-headers.yaml
 
 CreateBuildDirectory /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/EagerLinkingTBDs/Release-iphoneos
     cd /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle.xcodeproj
