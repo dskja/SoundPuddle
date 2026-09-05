@@ -22,11 +22,19 @@ final class MultipeerMeshTransport: NSObject, MeshTransporting {
 
     private(set) var connectedPeers: [MeshPeer] = []
 
+    private static var encryptionPreference: MCEncryptionPreference {
+        switch LiveContainerRuntime.preferredEncryption {
+        case .required: return .required
+        case .optional: return .optional
+        case .none: return .none
+        }
+    }
+
     override init() {
         let stored = UserDefaults.standard.string(forKey: "displayName")
         let name = String((stored ?? UIDevice.current.name).prefix(20))
         myPeerID = MCPeerID(displayName: name)
-        session = MCSession(peer: myPeerID, securityIdentity: nil, encryptionPreference: .required)
+        session = MCSession(peer: myPeerID, securityIdentity: nil, encryptionPreference: Self.encryptionPreference)
         super.init()
         session.delegate = self
     }
@@ -106,7 +114,7 @@ final class MultipeerMeshTransport: NSObject, MeshTransporting {
         stopBrowsing()
         session.disconnect()
         session.delegate = nil
-        session = MCSession(peer: myPeerID, securityIdentity: nil, encryptionPreference: .required)
+        session = MCSession(peer: myPeerID, securityIdentity: nil, encryptionPreference: Self.encryptionPreference)
         session.delegate = self
         connectedPeers = []
         pendingPeers.removeAll()
