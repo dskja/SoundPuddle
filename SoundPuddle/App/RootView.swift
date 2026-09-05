@@ -23,7 +23,7 @@ struct RootView: View {
                     JoinLiveView()
                 }
             }
-            .transition(.opacity)
+            .transition(.opacity.combined(with: .scale(scale: 0.985)))
         }
         .animation(Motion.route, value: model.route)
         .onChange(of: scenePhase) { _, phase in
@@ -35,10 +35,12 @@ struct RootView: View {
                     .font(Theme.mono)
                     .foregroundStyle(Theme.textMuted)
                     .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(Theme.ink.opacity(0.55))
-                    .clipShape(Capsule())
-                    .padding(.top, 8)
+                    .padding(.vertical, 7)
+                    .background {
+                        Capsule().fill(.ultraThinMaterial)
+                        Capsule().strokeBorder(Theme.strokeGhost, lineWidth: 1)
+                    }
+                    .padding(.top, 10)
                     .allowsHitTesting(false)
                     .accessibilityHidden(true)
             }

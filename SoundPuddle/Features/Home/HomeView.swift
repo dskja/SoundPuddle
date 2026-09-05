@@ -3,32 +3,42 @@ import SwiftUI
 struct HomeView: View {
     @Environment(AppModel.self) private var model
     @State private var showNameSheet = false
+    @State private var appear = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
+                Text("0.0.2")
+                    .font(Theme.mono)
+                    .foregroundStyle(Theme.textMuted)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(.ultraThinMaterial, in: Capsule())
                 Spacer()
-                Button {
+                GlassIconButton(systemName: "person.crop.circle") {
                     showNameSheet = true
-                } label: {
-                    Image(systemName: "person.crop.circle")
-                        .font(.system(size: 22, weight: .medium))
-                        .foregroundStyle(Theme.mist)
                 }
                 .accessibilityLabel(Text("settings.displayName.title"))
             }
 
-            Spacer(minLength: 24)
+            Spacer(minLength: 20)
+
             BrandMark()
-                .padding(.bottom, 28)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .scaleEffect(appear ? 1 : 0.86)
+                .opacity(appear ? 1 : 0)
+                .padding(.bottom, 22)
+
             Text("SoundPuddle")
                 .font(Theme.display)
                 .foregroundStyle(Theme.textPrimary)
                 .accessibilityAddTraits(.isHeader)
+
             Text(String(localized: "home.headline"))
                 .font(Theme.displayMD)
                 .foregroundStyle(Theme.lime)
                 .padding(.top, 10)
+
             Text(String(localized: "home.subhead"))
                 .font(Theme.body)
                 .foregroundStyle(Theme.textMuted)
@@ -37,7 +47,7 @@ struct HomeView: View {
 
             if model.isLiveContainer {
                 LiveContainerBanner()
-                    .padding(.top, 20)
+                    .padding(.top, 18)
             }
 
             Spacer()
@@ -53,9 +63,14 @@ struct HomeView: View {
             .padding(.bottom, 28)
         }
         .padding(.horizontal, 28)
+        .onAppear {
+            guard !Motion.reduceMotion else { appear = true; return }
+            withAnimation(Motion.brand) { appear = true }
+        }
         .sheet(isPresented: $showNameSheet) {
             DisplayNameSheet()
                 .presentationDetents([.medium])
+                .presentationBackground(.ultraThinMaterial)
         }
     }
 }
