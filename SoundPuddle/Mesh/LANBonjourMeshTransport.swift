@@ -244,7 +244,7 @@ final class LANBonjourMeshTransport: MeshTransporting {
             let id = name
             seen.insert(id)
             let advertisement = Self.advertisement(from: result) ?? advertisementFallback(name: name)
-            let display = advertisement?.title ?? String(name.dropFirst(Self.namePrefix.count))
+            let display = advertisement.title
             let isNew = discovered[id] == nil
             discovered[id] = (result.endpoint, advertisement, display)
             if isNew {
