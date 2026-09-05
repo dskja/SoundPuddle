@@ -19,6 +19,29 @@ struct JoinDiscoverView: View {
                 LiveContainerBanner()
             }
 
+            if model.isLiveContainer {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text(String(localized: "join.code.title"))
+                        .font(Theme.mono)
+                        .foregroundStyle(Theme.textMuted)
+                    TextField(String(localized: "join.code.placeholder"), text: Bindable(model).manualJoinAddress)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                        .keyboardType(.asciiCapable)
+                        .font(Theme.displayMD)
+                        .foregroundStyle(Theme.textPrimary)
+                        .padding(12)
+                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    Text(String(localized: "join.code.blurb"))
+                        .font(Theme.mono)
+                        .foregroundStyle(Theme.sand)
+                        .fixedSize(horizontal: false, vertical: true)
+                    PuddleButton(title: String(localized: "join.code.connect"), style: .primary) {
+                        model.joinWithManualAddress()
+                    }
+                }
+            }
+
             Text(String(localized: "join.dragHint"))
                 .font(Theme.body)
                 .foregroundStyle(Theme.textMuted)

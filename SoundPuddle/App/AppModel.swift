@@ -32,6 +32,8 @@ final class AppModel {
     var audioLevel: Float = 0
     var linkQuality: LinkQuality = .good
     var lastError: String?
+    var hostJoinAddress: String?
+    var manualJoinAddress: String = ""
     var isStreaming = false
     var showPermissionHint = false
     var displayName: String = UserDefaults.standard.string(forKey: "displayName") ?? UIDevice.current.name
@@ -260,6 +262,7 @@ final class AppModel {
                 startPingLoop()
                 startElapsedTick()
                 route = .hostLive
+                refreshHostJoinAddress()
                 Haptics.success()
             } catch {
                 lastError = error.localizedDescription
@@ -348,6 +351,48 @@ final class AppModel {
 
     // MARK: Join
 
+
+    func joinWithManualAddress() {
+        let code = manualJoinAddress.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !code.isEmpty else {
+            lastError = String(localized: "error.joinCodeInvalid")
+            Haptics.warning()
+            return
+        }
+        lastError = nil
+        discovered = []
+        mesh.stopBrowsing()
+        route = .joinConnecting
+        mesh.connect(toAddress: code)
+        joinTimeoutTask?.cancel()
+        joinTimeoutTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 20_000_000_000)
+            guard let self, !Task.isCancelled else { return }
+            if self.route == .joinConnecting || self.route == .joinCalibrate {
+                self.lastError = AppError.timeout.errorDescription
+                self.teardownAll()
+                self.route = .joinBrowse
+                self.startBrowsing()
+                Haptics.warning()
+            }
+        }
+    }
+
+    private func refreshHostJoinAddress() {
+        hostJoinAddress = mesh.publishedJoinAddress
+        guard hostJoinAddress == nil else { return }
+        Task { [weak self] in
+            for _ in 0..<24 {
+                try? await Task.sleep(nanoseconds: 250_000_000)
+                guard let self else { return }
+                if let address = self.mesh.publishedJoinAddress {
+                    self.hostJoinAddress = address
+                    return
+                }
+            }
+        }
+    }
+
     func startBrowsing() {
         discovered = []
         Task {
@@ -432,10 +477,9 @@ final class AppModel {
     private func handle(_ event: MeshEvent) {
         switch event {
         case .peerDiscovered(let peer, let ad):
-            if let ad {
-                discovered.removeAll { $0.peer.id == peer.id }
-                discovered.append((peer, ad))
-            }
+            let resolved = ad ?? SessionAdvertisement(title: peer.displayName, mode: .schwarm)
+            discovered.removeAll { $0.peer.id == peer.id }
+            discovered.append((peer, resolved))
         case .peerLost(let id):
             discovered.removeAll { $0.peer.id == id || $0.peer.displayName == id }
             peers.removeAll { $0.id == id || $0.displayName == id }
@@ -809,6 +853,7 @@ final class AppModel {
     }
 
     private func teardownAll() {
+        hostJoinAddress = nil
         joinTimeoutTask?.cancel()
         joinTimeoutTask = nil
         pingTask?.cancel()

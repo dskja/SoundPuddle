@@ -1,15 +1,17 @@
+import Darwin
 import Foundation
 import Network
 import UIKit
 
-/// LiveContainer's host `NSBonjourServices` allowlist does **not** include `_soundpuddle._tcp`/`.udp`.
-/// MultipeerConnectivity therefore fails with `NSNetServicesErrorDomain -72008` even when Local
-/// Network permission is granted. This transport discovers via `_mqtt._tcp` (allowlisted in
-/// LiveContainer) and carries control/audio on framed TCP.
+/// LiveContainer blocks Multipeer Bonjour (`_soundpuddle`) via host allowlist (-72008).
+/// This transport:
+/// 1) listens on TCP and publishes `ip:port` for manual join (reliable in LiveContainer)
+/// 2) optionally advertises/browses `_mqtt._tcp` (allowlisted) as a best-effort shortcut
 @MainActor
 final class LANBonjourMeshTransport: MeshTransporting {
     static let bonjourType = "_mqtt._tcp"
     private static let namePrefix = "SP-"
+    private static let preferredPort: UInt16 = 47822
     private static let magic: [UInt8] = [0x53, 0x50, 0x4C, 0x44] // SPLD
 
     private enum FrameType: UInt8 {
@@ -30,16 +32,19 @@ final class LANBonjourMeshTransport: MeshTransporting {
     }
 
     private(set) var connectedPeers: [MeshPeer] = []
+    private(set) var publishedJoinAddress: String?
 
     private var listener: NWListener?
     private var browser: NWBrowser?
     private var isHosting = false
     private var autoAcceptInvitations = true
     private var hostingCapacity = SessionAdvertisement.maxJoiners
+    private var activeAdvertisement: SessionAdvertisement?
     private let myDisplayName: String
 
     private var discovered: [String: (endpoint: NWEndpoint, advertisement: SessionAdvertisement?, name: String)] = [:]
     private var pipes: [String: PeerPipe] = [:]
+    private var boundPort: UInt16?
 
     init() {
         myDisplayName = Self.sanitizedDisplayName()
@@ -59,13 +64,19 @@ final class LANBonjourMeshTransport: MeshTransporting {
 
     func startHosting(advertisement: SessionAdvertisement) {
         isHosting = true
+        activeAdvertisement = advertisement
         hostingCapacity = advertisement.capacity
+        publishedJoinAddress = nil
+        boundPort = nil
         stopBrowsing()
         startListener(advertisement: advertisement)
     }
 
     func stopHosting() {
         isHosting = false
+        activeAdvertisement = nil
+        publishedJoinAddress = nil
+        boundPort = nil
         listener?.cancel()
         listener = nil
     }
@@ -86,6 +97,11 @@ final class LANBonjourMeshTransport: MeshTransporting {
     }
 
     func invite(_ peer: MeshPeer) {
+        // Prefer direct TCP when the peer id encodes host:port (manual join).
+        if let direct = Self.parseAddress(peer.id) ?? Self.parseAddress(peer.displayName) {
+            connect(toAddress: "\(direct.host):\(direct.port)", displayName: peer.displayName)
+            return
+        }
         guard let entry = discovered[peer.id] else {
             emit(.error(.mesh(String(localized: "error.peerMissing"))))
             return
@@ -119,12 +135,43 @@ final class LANBonjourMeshTransport: MeshTransporting {
         connectedPeers = []
     }
 
-    // MARK: - Bonjour
+    func connect(toAddress address: String) {
+        connect(toAddress: address, displayName: address)
+    }
+
+    private func connect(toAddress address: String, displayName: String) {
+        guard let parsed = Self.parseAddress(address) else {
+            emit(.error(.mesh(String(localized: "error.joinCodeInvalid"))))
+            return
+        }
+        let peerID = "\(parsed.host):\(parsed.port)"
+        emit(.peerStateChanged(MeshPeer(id: peerID, displayName: displayName, state: .connecting)))
+        let endpoint = NWEndpoint.hostPort(
+            host: NWEndpoint.Host(parsed.host),
+            port: NWEndpoint.Port(rawValue: parsed.port)!
+        )
+        let connection = NWConnection(to: endpoint, using: Self.tcpParameters())
+        attach(connection: connection, peerID: peerID, displayName: displayName)
+        connection.start(queue: .main)
+    }
+
+    // MARK: - Listener / Browser
 
     private func startListener(advertisement: SessionAdvertisement) {
         listener?.cancel()
+        let parameters = Self.tcpParameters()
         do {
-            let listener = try NWListener(using: Self.tcpParameters())
+            let listener: NWListener
+            if let preferred = NWEndpoint.Port(rawValue: Self.preferredPort) {
+                do {
+                    listener = try NWListener(using: parameters, on: preferred)
+                } catch {
+                    listener = try NWListener(using: parameters)
+                }
+            } else {
+                listener = try NWListener(using: parameters)
+            }
+
             listener.service = NWListener.Service(
                 name: Self.namePrefix + advertisement.sessionID,
                 type: Self.bonjourType,
@@ -132,8 +179,17 @@ final class LANBonjourMeshTransport: MeshTransporting {
             )
             listener.stateUpdateHandler = { [weak self] state in
                 Task { @MainActor in
-                    if case .failed(let error) = state {
-                        self?.emit(.error(.mesh(Self.friendlyError(error))))
+                    guard let self else { return }
+                    switch state {
+                    case .ready:
+                        if let port = self.listener?.port?.rawValue {
+                            self.boundPort = port
+                            self.refreshPublishedAddress()
+                        }
+                    case .failed(let error):
+                        self.emit(.error(.mesh(Self.friendlyError(error))))
+                    default:
+                        break
                     }
                 }
             }
@@ -149,12 +205,24 @@ final class LANBonjourMeshTransport: MeshTransporting {
         }
     }
 
+    private func refreshPublishedAddress() {
+        guard let port = boundPort, let ip = Self.primaryIPv4() else {
+            publishedJoinAddress = nil
+            return
+        }
+        publishedJoinAddress = "\(ip):\(port)"
+    }
+
     private func startBrowser() {
         browser?.cancel()
-        let browser = NWBrowser(for: .bonjour(type: Self.bonjourType, domain: nil), using: Self.tcpParameters())
+        // Use generic parameters for browsing — TCP-only parameters often miss Bonjour results.
+        let parameters = NWParameters()
+        parameters.includePeerToPeer = true
+        let browser = NWBrowser(for: .bonjour(type: Self.bonjourType, domain: nil), using: parameters)
         browser.stateUpdateHandler = { [weak self] state in
             Task { @MainActor in
                 if case .failed(let error) = state {
+                    // Bonjour browse is best-effort in LiveContainer; manual IP join remains available.
                     self?.emit(.error(.mesh(Self.friendlyError(error))))
                 }
             }
@@ -175,7 +243,7 @@ final class LANBonjourMeshTransport: MeshTransporting {
             guard name.hasPrefix(Self.namePrefix) else { continue }
             let id = name
             seen.insert(id)
-            let advertisement = Self.advertisement(from: result)
+            let advertisement = Self.advertisement(from: result) ?? advertisementFallback(name: name)
             let display = advertisement?.title ?? String(name.dropFirst(Self.namePrefix.count))
             let isNew = discovered[id] == nil
             discovered[id] = (result.endpoint, advertisement, display)
@@ -187,6 +255,14 @@ final class LANBonjourMeshTransport: MeshTransporting {
             discovered.removeValue(forKey: id)
             emit(.peerLost(id))
         }
+    }
+
+    private func advertisementFallback(name: String) -> SessionAdvertisement {
+        SessionAdvertisement(
+            title: String(name.dropFirst(Self.namePrefix.count)),
+            mode: .schwarm,
+            sessionID: String(name.dropFirst(Self.namePrefix.count))
+        )
     }
 
     private func handleInbound(_ connection: NWConnection) {
@@ -345,13 +421,11 @@ final class LANBonjourMeshTransport: MeshTransporting {
             let name = obj["name"], !name.isEmpty
         else { return }
 
-        // Keep the pipe key stable so the in-flight receive loop remains valid.
         let peer = MeshPeer(id: peerID, displayName: name, state: .connected)
         if var pipe = pipes[peerID] {
             pipe.peer = peer
             pipes[peerID] = pipe
         }
-
         if let idx = connectedPeers.firstIndex(where: { $0.id == peerID }) {
             connectedPeers[idx] = peer
         } else {
@@ -385,7 +459,6 @@ final class LANBonjourMeshTransport: MeshTransporting {
     }
 
     private static func makeTXTRecord(from advertisement: SessionAdvertisement) -> NWTXTRecord {
-        // NWBrowser.Result.Metadata.bonjour carries NWTXTRecord directly (no .txtRecord wrapper).
         var entries: [String: String] = [:]
         for (key, value) in advertisement.discoveryInfo {
             entries[key] = String(value.prefix(90))
@@ -395,11 +468,54 @@ final class LANBonjourMeshTransport: MeshTransporting {
 
     private static func advertisement(from result: NWBrowser.Result) -> SessionAdvertisement? {
         var info: [String: String] = [:]
-        // On current SDKs, `.bonjour` associates an NWTXTRecord value directly.
         if case .bonjour(let record) = result.metadata {
             info = record.dictionary
         }
         return SessionAdvertisement.from(discoveryInfo: info.isEmpty ? nil : info)
+    }
+
+    private static func parseAddress(_ raw: String) -> (host: String, port: UInt16)? {
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        // Accept "ip:port" or "SP ip:port"
+        let candidate = trimmed
+            .replacingOccurrences(of: "SP ", with: "")
+            .replacingOccurrences(of: "sp ", with: "")
+        let parts = candidate.split(separator: ":")
+        guard parts.count == 2, let port = UInt16(parts[1]), port > 0 else { return nil }
+        let host = String(parts[0])
+        guard !host.isEmpty else { return nil }
+        return (host, port)
+    }
+
+    private static func primaryIPv4() -> String? {
+        var ifaddr: UnsafeMutablePointer<ifaddrs>?
+        guard getifaddrs(&ifaddr) == 0, let first = ifaddr else { return nil }
+        defer { freeifaddrs(ifaddr) }
+
+        var fallback: String?
+        for ptr in sequence(first: first, next: { $0.pointee.ifa_next }) {
+            let iface = ptr.pointee
+            guard iface.ifa_addr.pointee.sa_family == UInt8(AF_INET) else { continue }
+            let name = String(cString: iface.ifa_name)
+            guard name.hasPrefix("en") || name.hasPrefix("bridge") || name.hasPrefix("wlan") else { continue }
+
+            var host = [CChar](repeating: 0, count: Int(NI_MAXHOST))
+            let result = getnameinfo(
+                iface.ifa_addr,
+                socklen_t(iface.ifa_addr.pointee.sa_len),
+                &host,
+                socklen_t(host.count),
+                nil,
+                0,
+                NI_NUMERICHOST
+            )
+            guard result == 0 else { continue }
+            let ip = String(cString: host)
+            if ip.hasPrefix("127.") || ip.hasPrefix("169.254.") { continue }
+            if name == "en0" { return ip }
+            if fallback == nil { fallback = ip }
+        }
+        return fallback
     }
 
     private static func friendlyError(_ error: Error) -> String {

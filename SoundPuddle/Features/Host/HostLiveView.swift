@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct HostLiveView: View {
     @Environment(AppModel.self) private var model
@@ -25,6 +26,38 @@ struct HostLiveView: View {
 
             LevelMeter(level: model.audioLevel)
                 .frame(maxWidth: .infinity)
+
+            if model.isLiveContainer, let code = model.hostJoinAddress {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(String(localized: "host.joinCode.title"))
+                        .font(Theme.mono)
+                        .foregroundStyle(Theme.textMuted)
+                    Text(code)
+                        .font(Theme.displayMD)
+                        .foregroundStyle(Theme.lime)
+                        .textSelection(.enabled)
+                    Text(String(localized: "host.joinCode.blurb"))
+                        .font(Theme.mono)
+                        .foregroundStyle(Theme.sand)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Button {
+                        UIPasteboard.general.string = code
+                        Haptics.light()
+                    } label: {
+                        Text(String(localized: "host.joinCode.copy"))
+                            .font(Theme.mono)
+                            .foregroundStyle(Theme.mist)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(14)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            } else if model.isLiveContainer {
+                Text(String(localized: "host.joinCode.waiting"))
+                    .font(Theme.mono)
+                    .foregroundStyle(Theme.sand)
+            }
 
             // Magic moment
             if !model.isStreaming {

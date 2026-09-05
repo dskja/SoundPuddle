@@ -678,13 +678,13 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Rechte gehören zur LiveContainer-Host-App (Local Network kann an sein). Multipeer-Bonjour (_soundpuddle) ist dort trotzdem gesperrt — SoundPuddle nutzt LAN-Discovery. Gleiches WLAN, VPN aus, Session neu starten."
+            "value": "LiveContainer blockiert Multipeer-Bonjour. Host zeigt einen Join-Code (IP:Port) — Gäste geben ihn unter Beitreten ein. Gleiches WLAN, VPN aus."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Permissions belong to the LiveContainer host app (Local Network can be on). Multipeer Bonjour (_soundpuddle) is still blocked there — SoundPuddle uses LAN discovery. Same Wi‑Fi, VPN off, restart the session."
+            "value": "LiveContainer blocks Multipeer Bonjour. Host shows a join code (IP:Port) — guests enter it on Join. Same Wi‑Fi, VPN off."
           }
         }
       }
@@ -1446,13 +1446,157 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "LAN-Discovery in LiveContainer fehlgeschlagen. Prüfe: gleiches WLAN, Local Network für LiveContainer an, VPN/Privat-Relay aus, dann Session neu starten."
+            "value": "Automatische Suche in LiveContainer fehlgeschlagen. Nutze den Join-Code (IP:Port) vom Host."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "LAN discovery in LiveContainer failed. Check: same Wi‑Fi, Local Network enabled for LiveContainer, VPN/Private Relay off, then restart the session."
+            "value": "Automatic discovery failed in LiveContainer. Use the join code (IP:Port) from the host."
+          }
+        }
+      }
+    },
+    "host.joinCode.title": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Join-Code (LiveContainer)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Join code (LiveContainer)"
+          }
+        }
+      }
+    },
+    "host.joinCode.blurb": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gäste tippen diesen Code unter Beitreten ein. Bonjour-Suche ist in LiveContainer oft blockiert — Code ist der zuverlässige Weg."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guests enter this code on Join. Bonjour discovery is often blocked in LiveContainer — the code is the reliable path."
+          }
+        }
+      }
+    },
+    "host.joinCode.copy": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Code kopieren"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy code"
+          }
+        }
+      }
+    },
+    "host.joinCode.waiting": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Join-Code wird vorbereitet…"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preparing join code…"
+          }
+        }
+      }
+    },
+    "join.code.title": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Per Code beitreten"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Join by code"
+          }
+        }
+      }
+    },
+    "join.code.placeholder": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "z. B. 192.168.1.20:47822"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "e.g. 192.168.1.20:47822"
+          }
+        }
+      }
+    },
+    "join.code.blurb": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Code vom Host-Bildschirm. Beide Phones im selben WLAN, VPN aus."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Code from the host screen. Both phones on the same Wi‑Fi, VPN off."
+          }
+        }
+      }
+    },
+    "join.code.connect": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mit Code verbinden"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect with code"
+          }
+        }
+      }
+    },
+    "error.joinCodeInvalid": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Join-Code ungültig. Format: IP:Port"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invalid join code. Format: IP:Port"
           }
         }
       }
