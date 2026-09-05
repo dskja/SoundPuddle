@@ -1,41 +1,39 @@
 # SoundPuddle CI build errors
 
-- SHA: `0fdaaae1fbb12d5bcf0c1dd734d41a35d4ea4494`
-- Run: 33978531225
+- SHA: `4c0e0e4c38978da18c1ed9f2fcb00396693a1cce`
+- Run: 33978611532
 - Xcode: Xcode 16.4
 
 ## Matching lines
 ```
 224:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:1:1: error: expected expression
-227:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Settings/DisplayNameSheet.swift:4:18: error: cannot find 'AppModel' in scope
-230:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Settings/DisplayNameSheet.swift:4:6: error: generic parameter 'T' could not be inferred
-236:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Home/HomeView.swift:4:18: error: cannot find 'AppModel' in scope
-239:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Home/HomeView.swift:4:6: error: generic parameter 'T' could not be inferred
-245:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Host/HostLiveView.swift:4:18: error: cannot find 'AppModel' in scope
-248:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Host/HostLiveView.swift:4:6: error: generic parameter 'T' could not be inferred
-254:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Host/HostLiveView.swift:87:21: error: generic parameter 'C' could not be inferred
-260:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Host/HostSetupView.swift:5:18: error: cannot find 'AppModel' in scope
-263:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Host/HostSetupView.swift:5:6: error: generic parameter 'T' could not be inferred
-269:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinCalibrateView.swift:4:18: error: cannot find 'AppModel' in scope
-272:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinCalibrateView.swift:4:6: error: generic parameter 'T' could not be inferred
-278:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinConnectingView.swift:4:18: error: cannot find 'AppModel' in scope
-281:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinConnectingView.swift:4:6: error: generic parameter 'T' could not be inferred
-287:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinDiscoverView.swift:4:18: error: cannot find 'AppModel' in scope
-290:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinDiscoverView.swift:4:6: error: generic parameter 'T' could not be inferred
-296:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinLiveView.swift:4:18: error: cannot find 'AppModel' in scope
-299:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinLiveView.swift:4:6: error: generic parameter 'T' could not be inferred
-305:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/RootView.swift:4:18: error: cannot find 'AppModel' in scope
-308:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/RootView.swift:4:6: error: generic parameter 'T' could not be inferred
-314:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/SoundPuddleApp.swift:5:32: error: cannot find 'AppModel' in scope
-317:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/SoundPuddleApp.swift:10:18: error: generic parameter 'T' could not be inferred
-329:** BUILD FAILED **
+227:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Mesh/MultipeerMeshTransport.swift:1:1: error: expected expression
+230:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Settings/DisplayNameSheet.swift:4:18: error: cannot find 'AppModel' in scope
+233:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Settings/DisplayNameSheet.swift:4:6: error: generic parameter 'T' could not be inferred
+239:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Home/HomeView.swift:4:18: error: cannot find 'AppModel' in scope
+242:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Home/HomeView.swift:4:6: error: generic parameter 'T' could not be inferred
+248:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Host/HostLiveView.swift:4:18: error: cannot find 'AppModel' in scope
+251:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Host/HostLiveView.swift:4:6: error: generic parameter 'T' could not be inferred
+257:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Host/HostLiveView.swift:87:21: error: generic parameter 'C' could not be inferred
+263:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Host/HostSetupView.swift:5:18: error: cannot find 'AppModel' in scope
+266:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Host/HostSetupView.swift:5:6: error: generic parameter 'T' could not be inferred
+272:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinCalibrateView.swift:4:18: error: cannot find 'AppModel' in scope
+275:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinCalibrateView.swift:4:6: error: generic parameter 'T' could not be inferred
+281:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinConnectingView.swift:4:18: error: cannot find 'AppModel' in scope
+284:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinConnectingView.swift:4:6: error: generic parameter 'T' could not be inferred
+290:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinDiscoverView.swift:4:18: error: cannot find 'AppModel' in scope
+293:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinDiscoverView.swift:4:6: error: generic parameter 'T' could not be inferred
+299:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinLiveView.swift:4:18: error: cannot find 'AppModel' in scope
+302:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinLiveView.swift:4:6: error: generic parameter 'T' could not be inferred
+308:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/RootView.swift:4:18: error: cannot find 'AppModel' in scope
+311:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/RootView.swift:4:6: error: generic parameter 'T' could not be inferred
+317:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/SoundPuddleApp.swift:5:32: error: cannot find 'AppModel' in scope
+320:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/SoundPuddleApp.swift:10:18: error: generic parameter 'T' could not be inferred
+332:** BUILD FAILED **
 ```
 
 ## Tail
 ```
-
-MkDir /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/assetcatalog_output/unthinned (in target 'SoundPuddle' from project 'SoundPuddle')
-    cd /Users/runner/work/SoundPuddle/SoundPuddle
     /bin/mkdir -p /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/assetcatalog_output/unthinned
 
 MkDir /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/assetcatalog_output/thinned (in target 'SoundPuddle' from project 'SoundPuddle')
@@ -122,6 +120,9 @@ CompileSwift normal arm64 (in target 'SoundPuddle' from project 'SoundPuddle')
     
 /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:1:1: error: expected expression
 @file:///tmp/appmodel_content.swift
+^
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Mesh/MultipeerMeshTransport.swift:1:1: error: expected expression
+@file:///agent/SoundPuddle/SoundPuddle/Mesh/MultipeerMeshTransport.swift
 ^
 /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Settings/DisplayNameSheet.swift:4:18: error: cannot find 'AppModel' in scope
     @Environment(AppModel.self) private var model
