@@ -1,5 +1,4 @@
 import Foundation
-import MultipeerConnectivity
 
 enum MeshEvent: Sendable {
     case peerDiscovered(MeshPeer, SessionAdvertisement?)
@@ -12,6 +11,7 @@ enum MeshEvent: Sendable {
     case error(AppError)
 }
 
+@MainActor
 protocol MeshTransporting: AnyObject {
     var connectedPeers: [MeshPeer] { get }
     var events: AsyncStream<MeshEvent> { get }

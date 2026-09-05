@@ -81,7 +81,7 @@ jobs:
       - name: Build Release iphoneos (unsigned)
         run: |
           set -euo pipefail
-          set -o pipefail
+          set +e
           xcodebuild \
             -project SoundPuddle.xcodeproj \
             -scheme SoundPuddle \
@@ -94,9 +94,16 @@ jobs:
             CODE_SIGN_IDENTITY="" \
             DEVELOPMENT_TEAM="" \
             CURRENT_PROJECT_VERSION=${{ github.run_number }} \
-            clean build | tee build-unsigned.log
-          echo "## xcodebuild errors" >> "$GITHUB_STEP_SUMMARY"
-          (grep -nE "error:|fatal error:|BUILD FAILED" build-unsigned.log || true) | tee -a "$GITHUB_STEP_SUMMARY"
+            clean build 2>&1 | tee build-unsigned.log
+          STATUS=${PIPESTATUS[0]}
+          set -e
+          {
+            echo "## xcodebuild errors"
+            echo '```'
+            grep -nE "error:|fatal error:|BUILD FAILED|warning:.*Main actor|cannot be used to satisfy" build-unsigned.log || echo "(no matching error lines)"
+            echo '```'
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+          exit $STATUS
 
       - name: Package unsigned IPA
         run: |
