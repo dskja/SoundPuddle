@@ -1,13 +1,16 @@
 import Foundation
 
-enum SpeakerRole: String, Codable, CaseIterable, Sendable {
+/// Seat around the table / field. Host is always center (`mid`).
+enum SpeakerRole: String, Codable, CaseIterable, Identifiable, Sendable {
     case mid
     case left
     case right
     case farLeft
     case farRight
 
-    var displayKey: String {
+    var id: String { rawValue }
+
+    var titleKey: String {
         switch self {
         case .mid: return "role.mid"
         case .left: return "role.left"
@@ -17,26 +20,40 @@ enum SpeakerRole: String, Codable, CaseIterable, Sendable {
         }
     }
 
+    /// Stereo pan −1…1 for join-side fallback.
     var pan: Float {
         switch self {
-        case .mid: return 0
+        case .farLeft: return -1
         case .left: return -0.55
+        case .mid: return 0
         case .right: return 0.55
-        case .farLeft: return -0.9
-        case .farRight: return 0.9
+        case .farRight: return 1
+        }
+    }
+
+    /// Gains applied to (L, R, mid) stems when host does spatial routing.
+    var stemGains: (l: Float, r: Float, mid: Float) {
+        switch self {
+        case .farLeft: return (1.0, 0.05, 0.15)
+        case .left: return (0.85, 0.15, 0.35)
+        case .mid: return (0.35, 0.35, 1.0)
+        case .right: return (0.15, 0.85, 0.35)
+        case .farRight: return (0.05, 1.0, 0.15)
         }
     }
 }
 
-struct FieldSeat: Identifiable, Codable, Equatable, Sendable {
+struct FieldSeat: Identifiable, Equatable, Codable, Sendable {
     var id: String
-    var displayName: String
+    var name: String
     var role: SpeakerRole
-    var distanceMeters: Double?
-    var quality: Double
+    var angleDeg: Double
+    var distanceM: Double
 }
 
-struct FieldMap: Codable, Equatable, Sendable {
+struct FieldMap: Equatable, Codable, Sendable {
     var seats: [FieldSeat]
-    var updatedAtMs: Int64
+    var version: Int
+
+    static let empty = FieldMap(seats: [], version: 0)
 }
