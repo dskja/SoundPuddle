@@ -1,870 +1,1046 @@
 {
-  "sourceLanguage": "de",
-  "strings": {
-    "home.headline": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Temporäre Silent-Discos"
+  "sourceLanguage" : "de",
+  "strings" : {
+    "home.headline" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raumklang. Sofort."
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Temporary silent discos"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Room sound. Instantly."
           }
         }
       }
     },
-    "home.subhead": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Lokales Audio-Mesh im Raum — ohne Internet."
+    "home.subhead" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Silent Disco im Mesh — lokal, ohne Cloud."
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Local audio mesh in the room — no internet."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Silent disco over mesh — local, no cloud."
           }
         }
       }
     },
-    "home.host": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Host starten"
+    "home.host" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Host starten"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Start hosting"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start hosting"
           }
         }
       }
     },
-    "home.join": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Beitreten"
+    "home.join" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beitreten"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Join"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Join"
           }
         }
       }
     },
-    "host.defaultTitle": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Park Disco"
+    "host.defaultTitle" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Park Disco"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Park Disco"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Park Disco"
           }
         }
       }
     },
-    "host.titlePlaceholder": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Session-Name"
+    "host.titlePlaceholder" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session-Name"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Session name"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session name"
           }
         }
       }
     },
-    "host.mode": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Modus"
+    "host.mode" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modus"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mode"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mode"
           }
         }
       }
     },
-    "host.setupTitle": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Session öffnen"
+    "host.setupTitle" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session öffnen"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Open session"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open session"
           }
         }
       }
     },
-    "host.source": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Quelle"
+    "host.source" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quelle"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Source"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Source"
           }
         }
       }
     },
-    "host.source.mic": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mikrofon"
+    "host.source.mic" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mikrofon"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Microphone"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Microphone"
           }
         }
       }
     },
-    "host.source.file": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Datei"
+    "host.source.file" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datei"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "File"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "File"
           }
         }
       }
     },
-    "host.open": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Session öffnen"
+    "host.open" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session öffnen"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Open session"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open session"
           }
         }
       }
     },
-    "host.stop": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Beenden"
+    "host.stop" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beenden"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "End session"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "End session"
           }
         }
       }
     },
-    "host.peers": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Peers"
+    "host.peers" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Peers"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Peers"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Peers"
           }
         }
       }
     },
-    "host.capacityWarning": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Raum wird voll — Multipeer unterstützt max. 7 Zuhörer."
+    "host.capacityWarning" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raum wird voll — Multipeer unterstützt max. 7 Zuhörer."
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Room getting full — Multipeer supports max 7 listeners."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Room getting full — Multipeer supports max 7 listeners."
           }
         }
       }
     },
-    "join.nearby": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "In der Nähe"
+    "join.nearby" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In der Nähe"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nearby"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nearby"
           }
         }
       }
     },
-    "join.empty": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Keine Pfütze in Reichweite. Host zuerst starten."
+    "join.empty" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Pfütze in Reichweite. Host zuerst starten."
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No puddle in range. Start a host first."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No puddle in range. Start a host first."
           }
         }
       }
     },
-    "join.refresh": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Erneut suchen"
+    "join.refresh" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erneut suchen"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Search again"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search again"
           }
         }
       }
     },
-    "join.connecting": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Verbinde…"
+    "join.connecting" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbinde…"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Connecting…"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connecting…"
           }
         }
       }
     },
-    "join.listening": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "LISTENING"
+    "join.listening" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du hörst mit"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "LISTENING"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Listening"
           }
         }
       }
     },
-    "join.leave": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Verlassen"
+    "join.leave" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verlassen"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Leave"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leave"
           }
         }
       }
     },
-    "permission.host.body": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Lokales Netz und Mikrofon werden für Hosting benötigt."
+    "permission.host.body" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lokales Netz und Mikrofon werden für Hosting benötigt."
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Local network and microphone are required for hosting."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Local network and microphone are required for hosting."
           }
         }
       }
     },
-    "permission.join.body": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Lokales Netz wird benötigt, um Sessions in der Nähe zu finden."
+    "permission.join.body" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lokales Netz wird benötigt, um Sessions in der Nähe zu finden."
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Local network is required to find nearby sessions."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Local network is required to find nearby sessions."
           }
         }
       }
     },
-    "common.back": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Zurück"
+    "common.back" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zurück"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Back"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Back"
           }
         }
       }
     },
-    "common.cancel": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Abbrechen"
+    "common.cancel" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abbrechen"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cancel"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
           }
         }
       }
     },
-    "link.good": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Verbindung gut"
+    "link.good" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbindung gut"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Link good"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Link good"
           }
         }
       }
     },
-    "link.okay": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Verbindung okay"
+    "link.okay" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbindung okay"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Link okay"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Link okay"
           }
         }
       }
     },
-    "link.weak": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Verbindung schwach"
+    "link.weak" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbindung schwach"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Link weak"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Link weak"
           }
         }
       }
     },
-    "mode.party": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Party"
+    "mode.party" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Party"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Party"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Party"
           }
         }
       }
     },
-    "mode.tour": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tour"
+    "mode.tour" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tour"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tour"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tour"
           }
         }
       }
     },
-    "mode.cinema": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cinema"
+    "mode.cinema" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cinema"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cinema"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cinema"
           }
         }
       }
     },
-    "mode.party.blurb": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Niedrige Latenz für Mixe und Mikrofon."
+    "mode.party.blurb" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niedrige Latenz für Mixe und Mikrofon."
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Low latency for mixes and mic."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Low latency for mixes and mic."
           }
         }
       }
     },
-    "mode.tour.blurb": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Stimme priorisiert für Führungen."
+    "mode.tour.blurb" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stimme priorisiert für Führungen."
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Voice-first for guided tours."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voice-first for guided tours."
           }
         }
       }
     },
-    "mode.cinema.blurb": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Datei-Stream für gemeinsamen Filmton."
+    "mode.cinema.blurb" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datei-Stream für gemeinsamen Filmton."
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "File stream for shared movie audio."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "File stream for shared movie audio."
           }
         }
       }
     },
-    "error.sessionFull": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Session ist voll."
+    "error.sessionFull" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session ist voll."
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Session is full."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session is full."
           }
         }
       }
     },
-    "error.protocolMismatch": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Protokollversion passt nicht."
+    "error.protocolMismatch" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Protokollversion passt nicht."
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Protocol version mismatch."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Protocol version mismatch."
           }
         }
       }
     },
-    "error.timeout": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Zeitüberschreitung bei Verbindung."
+    "error.timeout" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeitüberschreitung bei Verbindung."
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Connection timed out."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connection timed out."
           }
         }
       }
     },
-    "error.hostGone": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Host ist weg."
+    "error.hostGone" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Host ist weg."
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Host is gone."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Host is gone."
           }
         }
       }
     },
-    "error.browserInactive": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Suche ist nicht aktiv."
+    "error.browserInactive" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suche ist nicht aktiv."
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Browse is inactive."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Browse is inactive."
           }
         }
       }
     },
-    "error.peerMissing": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Peer nicht gefunden."
+    "error.peerMissing" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Peer nicht gefunden."
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Peer not found."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Peer not found."
           }
         }
       }
     },
-    "audio.level": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pegel"
+    "audio.level" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pegel"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Level"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Level"
           }
         }
       }
     },
-    "livecontainer.badge": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "LiveContainer"
+    "livecontainer.badge" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LiveContainer"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "LiveContainer"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LiveContainer"
           }
         }
       }
     },
-    "livecontainer.banner.body": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Berechtigungen (Lokales Netzwerk, Mikrofon, Bluetooth) gehören zur LiveContainer-Host-App. Dateiauswahl: „Fix File Picker“ aktivieren. Für stabiles Audio Multitask-Modus vermeiden."
+    "livecontainer.banner.body" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Berechtigungen (Lokales Netzwerk, Mikrofon, Bluetooth) gehören zur LiveContainer-Host-App. Dateiauswahl: „Fix File Picker“ aktivieren. Für stabiles Audio Multitask-Modus vermeiden."
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Permissions (Local Network, Mic, Bluetooth) belong to the LiveContainer host app. For files enable “Fix File Picker”. Avoid multitask mode for stable audio."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permissions (Local Network, Mic, Bluetooth) belong to the LiveContainer host app. For files enable “Fix File Picker”. Avoid multitask mode for stable audio."
           }
         }
       }
     },
-    "livecontainer.tip.host": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "In LiveContainer: Lokales Netz & Mikrofon in den LiveContainer-Einstellungen erlauben. Soft-Encryption ist aktiv."
+    "livecontainer.tip.host" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In LiveContainer: Lokales Netz & Mikrofon in den LiveContainer-Einstellungen erlauben. Soft-Encryption ist aktiv."
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "In LiveContainer: allow Local Network & Microphone in LiveContainer settings. Soft encryption is active."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In LiveContainer: allow Local Network & Microphone in LiveContainer settings. Soft encryption is active."
           }
         }
       }
     },
-    "livecontainer.tip.join": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "In LiveContainer: Lokales Netz in den LiveContainer-Einstellungen erlauben, dann erneut suchen."
+    "livecontainer.tip.join" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In LiveContainer: Lokales Netz in den LiveContainer-Einstellungen erlauben, dann erneut suchen."
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "In LiveContainer: allow Local Network in LiveContainer settings, then search again."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In LiveContainer: allow Local Network in LiveContainer settings, then search again."
           }
         }
       }
     },
-    "livecontainer.tip.audio": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Schwaches Audio in LiveContainer? Multitask aus, Host-App im Vordergrund lassen."
+    "livecontainer.tip.audio" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LiveContainer: Audio läuft stabiler ohne Multitasking."
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Weak audio in LiveContainer? Turn off multitask and keep the host app foregrounded."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LiveContainer: audio is more stable without multitasking."
           }
         }
       }
     },
-    "settings.displayName.title": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Anzeigename"
+    "settings.displayName.title" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anzeigename"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Display name"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Display name"
           }
         }
       }
     },
-    "settings.displayName.help": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wird anderen Geräten in der Nähe gezeigt. Gilt für neue Verbindungen (App-Neustart kann nötig sein)."
+    "settings.displayName.help" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wird anderen Geräten in der Nähe gezeigt. Gilt für neue Verbindungen (App-Neustart kann nötig sein)."
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Shown to nearby devices. Applies to new connections (app relaunch may be required)."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shown to nearby devices. Applies to new connections (app relaunch may be required)."
           }
         }
       }
     },
-    "settings.displayName.placeholder": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Name"
+    "settings.displayName.placeholder" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Name"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name"
           }
         }
       }
     },
-    "settings.displayName.save": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Speichern"
+    "settings.displayName.save" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Speichern"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Save"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save"
           }
         }
       }
     },
-    "error.permission.localNetwork": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Lokales Netzwerk ist nicht erlaubt."
+    "error.permission.localNetwork" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lokales Netzwerk ist nicht erlaubt."
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Local Network permission is denied."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Local Network permission is denied."
           }
         }
       }
     },
-    "error.permission.microphone": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mikrofonzugriff ist nicht erlaubt."
+    "error.permission.microphone" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mikrofonzugriff ist nicht erlaubt."
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Microphone permission is denied."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Microphone permission is denied."
           }
         }
       }
     },
-    "error.permission.bluetooth": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bluetooth-Zugriff ist nicht erlaubt."
+    "error.permission.bluetooth" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bluetooth-Zugriff ist nicht erlaubt."
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bluetooth permission is denied."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bluetooth permission is denied."
           }
         }
       }
     },
-    "error.cancelled": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Abgebrochen."
+    "error.cancelled" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abgebrochen."
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cancelled."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancelled."
+          }
+        }
+      }
+    },
+    "host.pause" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pause"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pause"
+          }
+        }
+      }
+    },
+    "host.resume" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weiter"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resume"
+          }
+        }
+      }
+    },
+    "host.monitorMute" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monitor stumm"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mute monitor"
+          }
+        }
+      }
+    },
+    "host.monitorUnmute" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monitor an"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unmute monitor"
+          }
+        }
+      }
+    },
+    "host.pausedBanner" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stream pausiert — Gäste hören Stille."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stream paused — guests hear silence."
+          }
+        }
+      }
+    },
+    "join.volume" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lautstärke"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Volume"
+          }
+        }
+      }
+    },
+    "join.mute" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stumm"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mute"
+          }
+        }
+      }
+    },
+    "join.unmute" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ton an"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unmute"
+          }
+        }
+      }
+    },
+    "join.roster" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Im Puddle"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In the puddle"
+          }
+        }
+      }
+    },
+    "session.elapsed" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laufzeit"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elapsed"
+          }
+        }
+      }
+    },
+    "link.rtt" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RTT"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RTT"
           }
         }
       }
     }
   },
-  "version": "1.0"
+  "version" : "1.0"
 }
