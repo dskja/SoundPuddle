@@ -159,8 +159,12 @@ extension MultipeerMeshTransport: MCSessionDelegate {
                 self.emit(.audio(data, from: peerID.displayName))
                 return
             }
-            if let message = try? ControlCodec.decode(data), let message {
-                self.emit(.control(message, from: peerID.displayName))
+            do {
+                if let message = try ControlCodec.decode(data) {
+                    self.emit(.control(message, from: peerID.displayName))
+                }
+            } catch {
+                self.emit(.error(.mesh(error.localizedDescription)))
             }
         }
     }
