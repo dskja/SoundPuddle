@@ -385,21 +385,19 @@ final class LANBonjourMeshTransport: MeshTransporting {
     }
 
     private static func makeTXTRecord(from advertisement: SessionAdvertisement) -> NWTXTRecord {
-        var txt = NWTXTRecord()
+        // NWBrowser.Result.Metadata.bonjour carries NWTXTRecord directly (no .txtRecord wrapper).
+        var entries: [String: String] = [:]
         for (key, value) in advertisement.discoveryInfo {
-            txt[key] = String(value.prefix(90))
+            entries[key] = String(value.prefix(90))
         }
-        return txt
+        return NWTXTRecord(entries)
     }
 
     private static func advertisement(from result: NWBrowser.Result) -> SessionAdvertisement? {
         var info: [String: String] = [:]
-        if case .bonjour(let metadata) = result.metadata {
-            let record = metadata.txtRecord
-            let dictionary = record.dictionary
-            if !dictionary.isEmpty {
-                info = dictionary
-            }
+        // On current SDKs, `.bonjour` associates an NWTXTRecord value directly.
+        if case .bonjour(let record) = result.metadata {
+            info = record.dictionary
         }
         return SessionAdvertisement.from(discoveryInfo: info.isEmpty ? nil : info)
     }
