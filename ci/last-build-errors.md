@@ -1,20 +1,29 @@
 # SoundPuddle CI build errors
 
-- SHA: `aee2c123cfe2d18cc5de7dba6f7dbb620bd8f667`
-- Run: 33953748977
+- SHA: `6463ce0f1e25414dd41b6664cb29dd095c208774`
+- Run: 33953830824
 - Xcode: Xcode 16.4
 
 ## Matching lines
 ```
-200:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Host/HostLiveView.swift:25:42: error: expected '{' after 'if' condition
-203:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Host/HostLiveView.swift:31:2: error: 'buildExpression' is unavailable: this expression does not conform to 'View'
-209:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinLiveView.swift:29:18: error: instance member 'font' cannot be used on type 'View'
-212:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Support/LocalNetworkPrimer.swift:13:36: error: type of expression is ambiguous without a type annotation
-221:** BUILD FAILED **
+200:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Support/LocalNetworkPrimer.swift:13:36: error: type of expression is ambiguous without a type annotation
+209:** BUILD FAILED **
 ```
 
 ## Tail
 ```
+
+SendProjectDescription
+
+CreateBuildOperation
+
+** CLEAN SUCCEEDED **
+
+note: Using codesigning identity override: 
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
 CreateBuildRequest
 
 SendProjectDescription
@@ -30,9 +39,9 @@ GatherProvisioningInputs
 
 CreateBuildDescription
 
-ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/usr/bin/actool --print-asset-tag-combinations --output-format xml1 /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Resources/Assets.xcassets
-
 ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/usr/bin/xcstringstool compile --dry-run --output-directory /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Resources/Localizable.xcstrings
+
+ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/usr/bin/actool --print-asset-tag-combinations --output-format xml1 /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Resources/Assets.xcassets
 
 ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.5.sdk -x c -c /dev/null
 
@@ -42,8 +51,12 @@ ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/X
 
 ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
 
-Build description signature: 82f6d6dbfc74248490876a21243d5ab1
-Build description path: /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/XCBuildData/82f6d6dbfc74248490876a21243d5ab1.xcbuilddata
+Build description signature: c20bb544bae3c9c5b5d124ab9e2f1891
+Build description path: /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/XCBuildData/c20bb544bae3c9c5b5d124ab9e2f1891.xcbuilddata
+ClangStatCache /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.5.sdk /Users/runner/work/SoundPuddle/SoundPuddle/build/SDKStatCaches.noindex/iphoneos18.5-22F76-a529daf784b3616c7c04a36aeb7f5c05.sdkstatcache
+    cd /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle.xcodeproj
+    /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.5.sdk -o /Users/runner/work/SoundPuddle/SoundPuddle/build/SDKStatCaches.noindex/iphoneos18.5-22F76-a529daf784b3616c7c04a36aeb7f5c05.sdkstatcache
+
 CreateBuildDirectory /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products
     cd /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle.xcodeproj
     builtin-create-build-directory /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products
@@ -52,17 +65,13 @@ CreateBuildDirectory /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Inte
     cd /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle.xcodeproj
     builtin-create-build-directory /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex
 
-ClangStatCache /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.5.sdk /Users/runner/work/SoundPuddle/SoundPuddle/build/SDKStatCaches.noindex/iphoneos18.5-22F76-a529daf784b3616c7c04a36aeb7f5c05.sdkstatcache
+WriteAuxiliaryFile /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle-746e37d11dd0800f6f83b801cdcfb2ca-VFS-iphoneos/all-product-headers.yaml
     cd /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle.xcodeproj
-    /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.5.sdk -o /Users/runner/work/SoundPuddle/SoundPuddle/build/SDKStatCaches.noindex/iphoneos18.5-22F76-a529daf784b3616c7c04a36aeb7f5c05.sdkstatcache
+    write-file /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle-746e37d11dd0800f6f83b801cdcfb2ca-VFS-iphoneos/all-product-headers.yaml
 
 CreateBuildDirectory /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products/Release-iphoneos
     cd /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle.xcodeproj
     builtin-create-build-directory /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products/Release-iphoneos
-
-WriteAuxiliaryFile /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle-746e37d11dd0800f6f83b801cdcfb2ca-VFS-iphoneos/all-product-headers.yaml
-    cd /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle.xcodeproj
-    write-file /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle-746e37d11dd0800f6f83b801cdcfb2ca-VFS-iphoneos/all-product-headers.yaml
 
 CreateBuildDirectory /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/EagerLinkingTBDs/Release-iphoneos
     cd /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle.xcodeproj
@@ -186,21 +195,9 @@ Failed frontend command:
 CompileSwift normal arm64 (in target 'SoundPuddle' from project 'SoundPuddle')
     cd /Users/runner/work/SoundPuddle/SoundPuddle
     
-/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Host/HostLiveView.swift:25:42: error: expected '{' after 'if' condition
-            if model.linkQuality == .weak
-                                         ^
-/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Host/HostLiveView.swift:31:2: error: 'buildExpression' is unavailable: this expression does not conform to 'View'
- {
- ^
-SwiftUICore.ViewBuilder.buildExpression:3:22: note: 'buildExpression' has been explicitly marked unavailable here
-  public static func buildExpression(_ invalid: Any) -> some View
-                     ^
-/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinLiveView.swift:29:18: error: instance member 'font' cannot be used on type 'View'
-                .font(Theme.mono)
-                ~^~~~
 /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Support/LocalNetworkPrimer.swift:13:36: error: type of expression is ambiguous without a type annotation
-        browser.stateUpdateHandler = { _, _ in }
-        ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+        browser.stateUpdateHandler = { (_: NWBrowser.State, _: NWBrowser.State?) in }
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 SwiftDriver\ Compilation SoundPuddle normal arm64 com.apple.xcode.tools.swift.compiler (in target 'SoundPuddle' from project 'SoundPuddle')
     cd /Users/runner/work/SoundPuddle/SoundPuddle
