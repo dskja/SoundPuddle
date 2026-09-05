@@ -10,7 +10,7 @@ final class LocalNetworkPrimer {
         params.includePeerToPeer = true
         let descriptor: NWBrowser.Descriptor = .bonjour(type: "_soundpuddle._tcp", domain: nil)
         let browser = NWBrowser(for: descriptor, using: params)
-        browser.stateUpdateHandler = { (_: NWBrowser.State, _: NWBrowser.State) in }
+        browser.stateUpdateHandler = { (_: NWBrowser.State, _: NWBrowser.State?) in }
         browser.browseResultsChangedHandler = { (_: Set<NWBrowser.Result>, _: Set<NWBrowser.Result.Change>) in }
         browser.start(queue: .main)
         self.browser = browser
