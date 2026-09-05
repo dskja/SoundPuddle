@@ -10,9 +10,12 @@ struct JoinDiscoverView: View {
                 .foregroundStyle(Theme.textPrimary)
 
             if model.showPermissionHint {
-                Text(String(localized: "permission.join.body"))
+                Text(String(localized: String.LocalizationValue(LiveContainerRuntime.joinTipKey)))
                     .font(Theme.body)
                     .foregroundStyle(Theme.sand)
+            }
+            if model.isLiveContainer {
+                LiveContainerBanner()
             }
 
             if model.discovered.isEmpty {

@@ -50,7 +50,7 @@ struct HostSetupView: View {
             allowsMultipleSelection: false
         ) { result in
             if case .success(let urls) = result, let url = urls.first {
-                model.hostSource = .file(url)
+                model.importAudioFile(url)
             }
         }
     }
@@ -61,9 +61,17 @@ struct HostSetupView: View {
                 .font(Theme.displayMD)
                 .foregroundStyle(Theme.textPrimary)
             if model.showPermissionHint {
-                Text(String(localized: "permission.host.body"))
+                Text(String(localized: String.LocalizationValue(LiveContainerRuntime.hostTipKey)))
                     .font(Theme.body)
                     .foregroundStyle(Theme.sand)
+            }
+            if model.isLiveContainer {
+                LiveContainerBanner()
+            }
+            if let name = model.importedFileLabel {
+                Text(name)
+                    .font(Theme.mono)
+                    .foregroundStyle(Theme.mist)
             }
         }
     }

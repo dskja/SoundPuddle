@@ -20,6 +20,12 @@ struct JoinLiveView: View {
                 .padding(.vertical, 28)
 
             Text(LocalizedStringKey(model.linkQuality.titleKey))
+            if model.isLiveContainer && model.linkQuality != .good {
+                Text(String(localized: "livecontainer.tip.audio"))
+                    .font(Theme.mono)
+                    .foregroundStyle(Theme.sand)
+            }
+
                 .font(Theme.mono)
                 .foregroundStyle(Theme.mist)
 

@@ -2,10 +2,23 @@ import SwiftUI
 
 struct HomeView: View {
     @Environment(AppModel.self) private var model
+    @State private var showNameSheet = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Spacer(minLength: 48)
+            HStack {
+                Spacer()
+                Button {
+                    showNameSheet = true
+                } label: {
+                    Image(systemName: "person.crop.circle")
+                        .font(.system(size: 22, weight: .medium))
+                        .foregroundStyle(Theme.mist)
+                }
+                .accessibilityLabel(Text("settings.displayName.title"))
+            }
+
+            Spacer(minLength: 24)
             BrandMark()
                 .padding(.bottom, 28)
             Text("SoundPuddle")
@@ -22,6 +35,11 @@ struct HomeView: View {
                 .padding(.top, 12)
                 .fixedSize(horizontal: false, vertical: true)
 
+            if model.isLiveContainer {
+                LiveContainerBanner()
+                    .padding(.top, 20)
+            }
+
             Spacer()
 
             VStack(spacing: 12) {
@@ -35,5 +53,9 @@ struct HomeView: View {
             .padding(.bottom, 28)
         }
         .padding(.horizontal, 28)
+        .sheet(isPresented: $showNameSheet) {
+            DisplayNameSheet()
+                .presentationDetents([.medium])
+        }
     }
 }
