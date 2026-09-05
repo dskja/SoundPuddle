@@ -1,70 +1,48 @@
 # SoundPuddle CI build errors
 
-- SHA: `3414b617f697a000832c64e49545ca4fc496163f`
-- Run: 33959289058
+- SHA: `6dd735c23ba4a12675b7eb6e3393f53112293051`
+- Run: 33959473359
 - Xcode: Xcode 16.4
 
 ## Matching lines
 ```
-200:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:1:1: error: expected expression
-203:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Settings/DisplayNameSheet.swift:4:18: error: cannot find 'AppModel' in scope
-206:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Settings/DisplayNameSheet.swift:4:6: error: generic parameter 'T' could not be inferred
-212:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Home/HomeView.swift:4:18: error: cannot find 'AppModel' in scope
-215:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Home/HomeView.swift:4:6: error: generic parameter 'T' could not be inferred
-221:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Host/HostLiveView.swift:4:18: error: cannot find 'AppModel' in scope
-224:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Host/HostLiveView.swift:4:6: error: generic parameter 'T' could not be inferred
-230:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Host/HostLiveView.swift:87:21: error: generic parameter 'C' could not be inferred
-236:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Host/HostSetupView.swift:5:18: error: cannot find 'AppModel' in scope
-239:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Host/HostSetupView.swift:5:6: error: generic parameter 'T' could not be inferred
-245:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinCalibrateView.swift:4:18: error: cannot find 'AppModel' in scope
-248:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinCalibrateView.swift:4:6: error: generic parameter 'T' could not be inferred
-254:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinConnectingView.swift:4:18: error: cannot find 'AppModel' in scope
-257:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinConnectingView.swift:4:6: error: generic parameter 'T' could not be inferred
-263:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinDiscoverView.swift:4:18: error: cannot find 'AppModel' in scope
-266:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinDiscoverView.swift:4:6: error: generic parameter 'T' could not be inferred
-272:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinLiveView.swift:4:18: error: cannot find 'AppModel' in scope
-275:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinLiveView.swift:4:6: error: generic parameter 'T' could not be inferred
-281:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/RootView.swift:4:18: error: cannot find 'AppModel' in scope
-284:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/RootView.swift:4:6: error: generic parameter 'T' could not be inferred
-290:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/SoundPuddleApp.swift:5:32: error: cannot find 'AppModel' in scope
-293:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/SoundPuddleApp.swift:10:18: error: generic parameter 'T' could not be inferred
-305:** BUILD FAILED **
+220:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:262:26: error: consecutive statements on a line must be separated by ';'
+224:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:262:26: error: expected expression
+227:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:340:26: error: consecutive statements on a line must be separated by ';'
+231:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:340:26: error: expected expression
+234:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:363:17: error: expected '}' at end of brace statement
+240:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:363:17: error: expected '}' in class
+246:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:132:26: error: value of type 'AppModel' has no member 'maybeBroadcastLightCue'
+249:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:151:22: error: value of type 'AppModel' has no member 'scheduleQualityRecovery'
+252:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:155:15: error: missing arguments for parameters #1, #2 in call
+259:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:157:9: error: cannot find 'observeAudioInterruptions' in scope
+262:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:181:9: error: cannot find 'teardownAll' in scope
+265:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:201:13: error: cannot find 'syncPlaylistUI' in scope
+268:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:233:31: error: cannot find 'requestMicrophonePermission' in scope
+271:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:246:25: error: cannot find 'syncPlaylistUI' in scope
+274:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:254:17: error: cannot find 'holdIdleTimer' in scope
+277:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:255:17: error: cannot find 'rebalanceField' in scope
+280:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:256:17: error: cannot find 'broadcastPlaylist' in scope
+283:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:257:17: error: cannot find 'startPingLoop' in scope
+286:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:258:17: error: cannot find 'startElapsedTick' in scope
+289:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:273:19: error: cannot find 'runHostCalibration' in scope
+292:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:274:13: error: cannot find 'beginHostStreamScheduled' in scope
+295:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:281:9: error: cannot find 'teardownAll' in scope
+298:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:295:13: error: cannot find 'sendStreamStart' in scope
+301:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:318:9: error: cannot find 'syncPlaylistUI' in scope
+304:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:319:9: error: cannot find 'broadcastPlaylist' in scope
+307:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:325:9: error: cannot find 'syncPlaylistUI' in scope
+310:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:326:9: error: cannot find 'broadcastPlaylist' in scope
+313:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:338:17: error: cannot find 'sendStreamStart' in scope
+319:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:363:9: error: cannot find 'joinTime' in scope
+322:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinCalibrateView.swift:34:23: error: value of type 'AppModel' has no member 'leaveSession'
+325:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinLiveView.swift:50:31: error: value of type 'AppModel' has no member 'toggleMute'
+328:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/RootView.swift:39:19: error: value of type 'AppModel' has no member 'handleScenePhase'
+337:** BUILD FAILED **
 ```
 
 ## Tail
 ```
-
-WriteAuxiliaryFile /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/Objects-normal/arm64/SoundPuddle_const_extract_protocols.json (in target 'SoundPuddle' from project 'SoundPuddle')
-    cd /Users/runner/work/SoundPuddle/SoundPuddle
-    write-file /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/Objects-normal/arm64/SoundPuddle_const_extract_protocols.json
-
-WriteAuxiliaryFile /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/Objects-normal/arm64/SoundPuddle.SwiftFileList (in target 'SoundPuddle' from project 'SoundPuddle')
-    cd /Users/runner/work/SoundPuddle/SoundPuddle
-    write-file /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/Objects-normal/arm64/SoundPuddle.SwiftFileList
-
-WriteAuxiliaryFile /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/Objects-normal/arm64/SoundPuddle.SwiftConstValuesFileList (in target 'SoundPuddle' from project 'SoundPuddle')
-    cd /Users/runner/work/SoundPuddle/SoundPuddle
-    write-file /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/Objects-normal/arm64/SoundPuddle.SwiftConstValuesFileList
-
-WriteAuxiliaryFile /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/Objects-normal/arm64/SoundPuddle.LinkFileList (in target 'SoundPuddle' from project 'SoundPuddle')
-    cd /Users/runner/work/SoundPuddle/SoundPuddle
-    write-file /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/Objects-normal/arm64/SoundPuddle.LinkFileList
-
-WriteAuxiliaryFile /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/Objects-normal/arm64/SoundPuddle-OutputFileMap.json (in target 'SoundPuddle' from project 'SoundPuddle')
-    cd /Users/runner/work/SoundPuddle/SoundPuddle
-    write-file /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/Objects-normal/arm64/SoundPuddle-OutputFileMap.json
-
-MkDir /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products/Release-iphoneos/SoundPuddle.app (in target 'SoundPuddle' from project 'SoundPuddle')
-    cd /Users/runner/work/SoundPuddle/SoundPuddle
-    /bin/mkdir -p /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products/Release-iphoneos/SoundPuddle.app
-
-MkDir /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/assetcatalog_output/unthinned (in target 'SoundPuddle' from project 'SoundPuddle')
-    cd /Users/runner/work/SoundPuddle/SoundPuddle
-    /bin/mkdir -p /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/assetcatalog_output/unthinned
-
-MkDir /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/assetcatalog_output/thinned (in target 'SoundPuddle' from project 'SoundPuddle')
-    cd /Users/runner/work/SoundPuddle/SoundPuddle
-    /bin/mkdir -p /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/assetcatalog_output/thinned
 
 GenerateAssetSymbols /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Resources/Assets.xcassets (in target 'SoundPuddle' from project 'SoundPuddle')
     cd /Users/runner/work/SoundPuddle/SoundPuddle
@@ -90,6 +68,26 @@ CpResource /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products/Relea
 CpResource /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products/Release-iphoneos/SoundPuddle.app/IBMPlexMono-Regular.ttf /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Fonts/IBMPlexMono-Regular.ttf (in target 'SoundPuddle' from project 'SoundPuddle')
     cd /Users/runner/work/SoundPuddle/SoundPuddle
     builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Fonts/IBMPlexMono-Regular.ttf /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products/Release-iphoneos/SoundPuddle.app
+
+CpResource /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products/Release-iphoneos/SoundPuddle.app/04.b64 /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/.assemble/04.b64 (in target 'SoundPuddle' from project 'SoundPuddle')
+    cd /Users/runner/work/SoundPuddle/SoundPuddle
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/.assemble/04.b64 /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products/Release-iphoneos/SoundPuddle.app
+
+CpResource /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products/Release-iphoneos/SoundPuddle.app/03.b64 /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/.assemble/03.b64 (in target 'SoundPuddle' from project 'SoundPuddle')
+    cd /Users/runner/work/SoundPuddle/SoundPuddle
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/.assemble/03.b64 /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products/Release-iphoneos/SoundPuddle.app
+
+CpResource /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products/Release-iphoneos/SoundPuddle.app/02.b64 /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/.assemble/02.b64 (in target 'SoundPuddle' from project 'SoundPuddle')
+    cd /Users/runner/work/SoundPuddle/SoundPuddle
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/.assemble/02.b64 /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products/Release-iphoneos/SoundPuddle.app
+
+CpResource /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products/Release-iphoneos/SoundPuddle.app/01.b64 /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/.assemble/01.b64 (in target 'SoundPuddle' from project 'SoundPuddle')
+    cd /Users/runner/work/SoundPuddle/SoundPuddle
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/.assemble/01.b64 /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products/Release-iphoneos/SoundPuddle.app
+
+CpResource /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products/Release-iphoneos/SoundPuddle.app/00.b64 /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/.assemble/00.b64 (in target 'SoundPuddle' from project 'SoundPuddle')
+    cd /Users/runner/work/SoundPuddle/SoundPuddle
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/.assemble/00.b64 /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products/Release-iphoneos/SoundPuddle.app
 
 CompileXCStrings /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/ /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Resources/Localizable.xcstrings (in target 'SoundPuddle' from project 'SoundPuddle')
     cd /Users/runner/work/SoundPuddle/SoundPuddle
@@ -120,105 +118,117 @@ Failed frontend command:
 CompileSwift normal arm64 (in target 'SoundPuddle' from project 'SoundPuddle')
     cd /Users/runner/work/SoundPuddle/SoundPuddle
     
-/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:1:1: error: expected expression
-@/tmp/appmodel_decoded.swift
-^
-/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Settings/DisplayNameSheet.swift:4:18: error: cannot find 'AppModel' in scope
-    @Environment(AppModel.self) private var model
-                 ^~~~~~~~
-/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Settings/DisplayNameSheet.swift:4:6: error: generic parameter 'T' could not be inferred
-    @Environment(AppModel.self) private var model
-     ^
-SwiftUICore.Environment.init:3:10: note: in call to initializer
-  public init<T>(_ objectType: T.Type) where Value == T?, T : AnyObject, T : Observable}
-         ^
-/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Home/HomeView.swift:4:18: error: cannot find 'AppModel' in scope
-    @Environment(AppModel.self) private var model
-                 ^~~~~~~~
-/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Home/HomeView.swift:4:6: error: generic parameter 'T' could not be inferred
-    @Environment(AppModel.self) private var model
-     ^
-SwiftUICore.Environment.init:3:10: note: in call to initializer
-  public init<T>(_ objectType: T.Type) where Value == T?, T : AnyObject, T : Observable}
-         ^
-/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Host/HostLiveView.swift:4:18: error: cannot find 'AppModel' in scope
-    @Environment(AppModel.self) private var model
-                 ^~~~~~~~
-/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Host/HostLiveView.swift:4:6: error: generic parameter 'T' could not be inferred
-    @Environment(AppModel.self) private var model
-     ^
-SwiftUICore.Environment.init:3:10: note: in call to initializer
-  public init<T>(_ objectType: T.Type) where Value == T?, T : AnyObject, T : Observable}
-         ^
-/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Host/HostLiveView.swift:87:21: error: generic parameter 'C' could not be inferred
-                    ForEach(model.fieldMap.seats) { seat in
-                    ^
-SwiftUICore.ForEach.init:2:8: note: in call to initializer
-public init<C>(_ data: Binding<C>, @ViewBuilder content: @escaping (Binding<C.Element>) -> Content) where Data == LazyMapSequence<C.Indices, (C.Index, ID)>, ID == C.Element.ID, C : MutableCollection, C : RandomAccessCollection, C.Element : Identifiable, C.Index : Hashable}
-       ^
-/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Host/HostSetupView.swift:5:18: error: cannot find 'AppModel' in scope
-    @Environment(AppModel.self) private var model
-                 ^~~~~~~~
-/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Host/HostSetupView.swift:5:6: error: generic parameter 'T' could not be inferred
-    @Environment(AppModel.self) private var model
-     ^
-SwiftUICore.Environment.init:3:10: note: in call to initializer
-  public init<T>(_ objectType: T.Type) where Value == T?, T : AnyObject, T : Observable}
-         ^
-/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinCalibrateView.swift:4:18: error: cannot find 'AppModel' in scope
-    @Environment(AppModel.self) private var model
-                 ^~~~~~~~
-/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinCalibrateView.swift:4:6: error: generic parameter 'T' could not be inferred
-    @Environment(AppModel.self) private var model
-     ^
-SwiftUICore.Environment.init:3:10: note: in call to initializer
-  public init<T>(_ objectType: T.Type) where Value == T?, T : AnyObject, T : Observable}
-         ^
-/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinConnectingView.swift:4:18: error: cannot find 'AppModel' in scope
-    @Environment(AppModel.self) private var model
-                 ^~~~~~~~
-/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinConnectingView.swift:4:6: error: generic parameter 'T' could not be inferred
-    @Environment(AppModel.self) private var model
-     ^
-SwiftUICore.Environment.init:3:10: note: in call to initializer
-  public init<T>(_ objectType: T.Type) where Value == T?, T : AnyObject, T : Observable}
-         ^
-/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinDiscoverView.swift:4:18: error: cannot find 'AppModel' in scope
-    @Environment(AppModel.self) private var model
-                 ^~~~~~~~
-/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinDiscoverView.swift:4:6: error: generic parameter 'T' could not be inferred
-    @Environment(AppModel.self) private var model
-     ^
-SwiftUICore.Environment.init:3:10: note: in call to initializer
-  public init<T>(_ objectType: T.Type) where Value == T?, T : AnyObject, T : Observable}
-         ^
-/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinLiveView.swift:4:18: error: cannot find 'AppModel' in scope
-    @Environment(AppModel.self) private var model
-                 ^~~~~~~~
-/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinLiveView.swift:4:6: error: generic parameter 'T' could not be inferred
-    @Environment(AppModel.self) private var model
-     ^
-SwiftUICore.Environment.init:3:10: note: in call to initializer
-  public init<T>(_ objectType: T.Type) where Value == T?, T : AnyObject, T : Observable}
-         ^
-/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/RootView.swift:4:18: error: cannot find 'AppModel' in scope
-    @Environment(AppModel.self) private var model
-                 ^~~~~~~~
-/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/RootView.swift:4:6: error: generic parameter 'T' could not be inferred
-    @Environment(AppModel.self) private var model
-     ^
-SwiftUICore.Environment.init:3:10: note: in call to initializer
-  public init<T>(_ objectType: T.Type) where Value == T?, T : AnyObject, T : Observable}
-         ^
-/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/SoundPuddleApp.swift:5:32: error: cannot find 'AppModel' in scope
-    @State private var model = AppModel()
-                               ^~~~~~~~
-/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/SoundPuddleApp.swift:10:18: error: generic parameter 'T' could not be inferred
-                .environment(model)
-                 ^
-SwiftUICore.View.environment:3:27: note: in call to function 'environment'
-  nonisolated public func environment<T>(_ object: T?) -> some View where T : AnyObject, T : Observable
-                          ^
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:262:26: error: consecutive statements on a line must be separated by ';'
+                lastError: String = error.localizedDescription
+                         ^
+                         ;
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:262:26: error: expected expression
+                lastError: String = error.localizedDescription
+                         ^
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:340:26: error: consecutive statements on a line must be separated by ';'
+                lastError: String = error.localizedDescription
+                         ^
+                         ;
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:340:26: error: expected expression
+                lastError: String = error.localizedDescription
+                         ^
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:363:17: error: expected '}' at end of brace statement
+        joinTime
+                ^
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:353:68: note: to match this opening '{'
+    func join(peer: MeshPeer, advertisement: SessionAdvertisement) {
+                                                                   ^
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:363:17: error: expected '}' in class
+        joinTime
+                ^
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:9:22: note: to match this opening '{'
+final class AppModel {
+                     ^
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:132:26: error: value of type 'AppModel' has no member 'maybeBroadcastLightCue'
+                    self.maybeBroadcastLightCue(level: level)
+                    ~~~~ ^~~~~~~~~~~~~~~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:151:22: error: value of type 'AppModel' has no member 'scheduleQualityRecovery'
+                self.scheduleQualityRecovery()
+                ~~~~ ^~~~~~~~~~~~~~~~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:155:15: error: missing arguments for parameters #1, #2 in call
+        listen()
+              ^
+               <#Int32#>, <#Int32#>
+/Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.5.sdk/usr/include/sys/socket.h:717:9: note: 'listen' declared here
+int     listen(int, int) __DARWIN_ALIAS(listen);
+        ^
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:157:9: error: cannot find 'observeAudioInterruptions' in scope
+        observeAudioInterruptions()
+        ^~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:181:9: error: cannot find 'teardownAll' in scope
+        teardownAll()
+        ^~~~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:201:13: error: cannot find 'syncPlaylistUI' in scope
+            syncPlaylistUI()
+            ^~~~~~~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:233:31: error: cannot find 'requestMicrophonePermission' in scope
+                    try await requestMicrophonePermission()
+                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:246:25: error: cannot find 'syncPlaylistUI' in scope
+                        syncPlaylistUI()
+                        ^~~~~~~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:254:17: error: cannot find 'holdIdleTimer' in scope
+                holdIdleTimer(true)
+                ^~~~~~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:255:17: error: cannot find 'rebalanceField' in scope
+                rebalanceField()
+                ^~~~~~~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:256:17: error: cannot find 'broadcastPlaylist' in scope
+                broadcastPlaylist()
+                ^~~~~~~~~~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:257:17: error: cannot find 'startPingLoop' in scope
+                startPingLoop()
+                ^~~~~~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:258:17: error: cannot find 'startElapsedTick' in scope
+                startElapsedTick()
+                ^~~~~~~~~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:273:19: error: cannot find 'runHostCalibration' in scope
+            await runHostCalibration()
+                  ^~~~~~~~~~~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:274:13: error: cannot find 'beginHostStreamScheduled' in scope
+            beginHostStreamScheduled()
+            ^~~~~~~~~~~~~~~~~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:281:9: error: cannot find 'teardownAll' in scope
+        teardownAll()
+        ^~~~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:295:13: error: cannot find 'sendStreamStart' in scope
+            sendStreamStart()
+            ^~~~~~~~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:318:9: error: cannot find 'syncPlaylistUI' in scope
+        syncPlaylistUI()
+        ^~~~~~~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:319:9: error: cannot find 'broadcastPlaylist' in scope
+        broadcastPlaylist()
+        ^~~~~~~~~~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:325:9: error: cannot find 'syncPlaylistUI' in scope
+        syncPlaylistUI()
+        ^~~~~~~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:326:9: error: cannot find 'broadcastPlaylist' in scope
+        broadcastPlaylist()
+        ^~~~~~~~~~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:338:17: error: cannot find 'sendStreamStart' in scope
+                sendStreamStart()
+                ^~~~~~~~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:340:17: warning: property is accessed but result is unused
+                lastError: String = error.localizedDescription
+                ^~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:363:9: error: cannot find 'joinTime' in scope
+        joinTime
+        ^~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinCalibrateView.swift:34:23: error: value of type 'AppModel' has no member 'leaveSession'
+                model.leaveSession()
+                ~~~~~ ^~~~~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinLiveView.swift:50:31: error: value of type 'AppModel' has no member 'toggleMute'
+                    ) { model.toggleMute() }
+                        ~~~~~ ^~~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/RootView.swift:39:19: error: value of type 'AppModel' has no member 'handleScenePhase'
+            model.handleScenePhase(phase)
+            ~~~~~ ^~~~~~~~~~~~~~~~
 
 SwiftDriver\ Compilation SoundPuddle normal arm64 com.apple.xcode.tools.swift.compiler (in target 'SoundPuddle' from project 'SoundPuddle')
     cd /Users/runner/work/SoundPuddle/SoundPuddle
