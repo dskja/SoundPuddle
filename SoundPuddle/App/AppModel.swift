@@ -764,4 +764,290 @@ final class AppModel {
             break
         case .ended:
             let options = (info[AVAudioSessionInterruptionOptionKey] as? UInt)
-                .flatMap(AVAudioSession.Interr
+                .flatMap(AVAudioSession.InterruptionOptions.init(rawValue:)) ?? []
+            guard options.contains(.shouldResume) else { return }
+            do {
+                if route == .hostLive {
+                    try sessionConfig.configure(for: sessionMode, role: .host)
+                    if !isStreamPaused {
+                        switch hostSource {
+                        case .microphone: try capture.start(source: .microphone)
+                        case .file(let url): try capture.start(source: .file(url))
+                        }
+                        capture.monitorMuted = hostMonitorMuted
+                        isStreaming = true
+                    }
+                } else if route == .joinLive {
+                    try sessionConfig.configure(for: sessionMode, role: .join)
+                    try playback.prepare(targetFrames: sessionMode.jitterTargetFrames)
+                    playback.speakerRole = myRole
+                    applyJoinVolume()
+                    isStreaming = true
+                }
+            } catch {
+                lastError = error.localizedDescription
+            }
+        @unknown default:
+            break
+        }
+    }
+
+    private func holdIdleTimer(_ hold: Bool) {
+        if hold {
+            guard !idleTimerHeld else { return }
+            IdleTimerGuard.pushActive()
+            idleTimerHeld = true
+        } else if idleTimerHeld {
+            IdleTimerGuard.popActive()
+            idleTimerHeld = false
+        }
+    }
+
+    private func teardownAll() {
+        joinTimeoutTask?.cancel()
+        joinTimeoutTask = nil
+        pingTask?.cancel()
+        pingTask = nil
+        qualityRecoveryTask?.cancel()
+        qualityRecoveryTask = nil
+        tickTask?.cancel()
+        tickTask = nil
+        clockSyncTask?.cancel()
+        clockSyncTask = nil
+        capture.stop()
+        playback.stop()
+        chirp.stop()
+        lightshow.stop()
+        clock.reset()
+        mesh.disconnect()
+        sessionConfig.deactivate()
+        holdIdleTimer(false)
+        sessionActive = false
+        isStreaming = false
+        isStreamPaused = false
+        isMuted = false
+        peers = []
+        discovered = []
+        rosterNames = []
+        audioLevel = 0
+        activeAdvertisement = nil
+        underrunCount = 0
+        linkQuality = .good
+        welcomedPeerIDs.removeAll()
+        pendingPingT = nil
+        lastRTT = nil
+        sessionStartedAt = nil
+        fieldMap = .empty
+        myRole = .mid
+        playback.speakerRole = .mid
+        calibrateProgress = 0
+        calibrateStatus = ""
+        chirpDistances.removeAll()
+        lightFlash = 0
+        dragProgress = 0
+        proximityReady = false
+        hostPlayEpochMs = nil
+        playlistTracks = []
+        currentTrackID = nil
+    }
+
+    // MARK: Schwarm helpers
+
+    private func enterJoinCalibrate() {
+        route = .joinCalibrate
+        calibrateProgress = 0.1
+        calibrateStatus = String(localized: "calibrate.syncing")
+        Haptics.light()
+    }
+
+    private func runHostCalibration() async {
+        chirpRound += 1
+        let playAt = ClockSync.nowMs() + 600
+        hostPlayEpochMs = playAt
+        mesh.sendControl(
+            .chirpSchedule(.init(
+                hostPlayAtMs: playAt,
+                frequencyHz: 18_500,
+                durationMs: 90,
+                round: chirpRound
+            )),
+            to: nil
+        )
+        do {
+            try chirp.prepare(frequencyHz: 18_500)
+            chirp.playChirp(durationMs: 90, atHostMs: playAt, clock: clock)
+        } catch {
+            lastError = error.localizedDescription
+        }
+        try? await Task.sleep(nanoseconds: 1_400_000_000)
+        rebalanceField()
+        for peer in peers {
+            mesh.sendControl(.calibrateDone(.init(peerId: peer.id, ok: true)), to: [peer])
+        }
+        chirp.stop()
+    }
+
+    private func beginHostStreamScheduled() {
+        let startAt = ClockSync.nowMs() + 700
+        hostPlayEpochMs = startAt
+        if let current = playlist.current {
+            mesh.sendControl(.playSchedule(.init(trackId: current.id, startHostMs: startAt)), to: nil)
+        }
+        Task {
+            try? await Task.sleep(nanoseconds: 700_000_000)
+            capture.setPaused(false)
+            isStreamPaused = false
+            isStreaming = true
+            sendStreamStart()
+            Haptics.success()
+        }
+    }
+
+    private func rebalanceField() {
+        let peerTuples = mesh.connectedPeers.map { (id: $0.id, name: $0.displayName) }
+        fieldMap = FieldBalancer.rebalance(
+            peers: peerTuples,
+            hostID: localPeerKey,
+            hostName: displayName,
+            distances: chirpDistances,
+            previous: fieldMap
+        )
+        broadcastFieldMap()
+        if let mine = fieldMap.seats.first(where: { $0.id == localPeerKey }) {
+            myRole = mine.role
+            playback.speakerRole = myRole
+        }
+    }
+
+    private func broadcastFieldMap() {
+        let payload = ControlMessage.FieldMapPayload(
+            version: fieldMap.version,
+            seats: fieldMap.seats.map {
+                .init(id: $0.id, name: $0.name, role: $0.role.rawValue, angleDeg: $0.angleDeg, distanceM: $0.distanceM)
+            }
+        )
+        mesh.sendControl(.fieldMap(payload), to: nil)
+        for seat in fieldMap.seats where seat.id != localPeerKey {
+            if let peer = peers.first(where: { $0.id == seat.id || $0.displayName == seat.name }) {
+                mesh.sendControl(
+                    .roleAssign(.init(
+                        peerId: seat.id,
+                        role: seat.role.rawValue,
+                        angleDeg: seat.angleDeg,
+                        distanceM: seat.distanceM
+                    )),
+                    to: [peer]
+                )
+            }
+        }
+    }
+
+    private func applyFieldMap(_ payload: ControlMessage.FieldMapPayload) {
+        fieldMap = FieldMap(
+            seats: payload.seats.map {
+                FieldSeat(
+                    id: $0.id,
+                    name: $0.name,
+                    role: SpeakerRole(rawValue: $0.role) ?? .mid,
+                    angleDeg: $0.angleDeg,
+                    distanceM: $0.distanceM
+                )
+            },
+            version: payload.version
+        )
+        if let mine = fieldMap.seats.first(where: { $0.id == localPeerKey || $0.name == displayName }) {
+            myRole = mine.role
+            playback.speakerRole = myRole
+        }
+        rosterNames = fieldMap.seats.map(\.name)
+        calibrateProgress = max(calibrateProgress, 0.9)
+        calibrateStatus = String(localized: "calibrate.placed")
+    }
+
+    private func handleClockSync(_ payload: ControlMessage.ClockSyncPayload, from: String) {
+        if route == .hostLive {
+            let t1 = ClockSync.nowMs()
+            let t2 = ClockSync.nowMs()
+            let reply = ControlMessage.clockSync(.init(t0: payload.t0, t1: t1, t2: t2))
+            if let peer = peers.first(where: { $0.displayName == from || $0.id == from }) {
+                mesh.sendControl(reply, to: [peer])
+            } else {
+                mesh.sendControl(reply, to: nil)
+            }
+        } else if let t1 = payload.t1, let t2 = payload.t2 {
+            let t3 = ClockSync.nowMs()
+            clock.recordSample(t0: payload.t0, t1: t1, t2: t2, t3: t3)
+            lastRTT = Int(clock.lastRTTMs)
+        }
+    }
+
+    private func handleChirpSchedule(_ payload: ControlMessage.ChirpSchedulePayload) {
+        calibrateStatus = String(localized: "calibrate.listening")
+        calibrateProgress = 0.45
+        do {
+            try chirp.prepare(frequencyHz: payload.frequencyHz)
+            chirp.armDetection { [weak self] detectMs in
+                guard let self else { return }
+                self.mesh.sendControl(
+                    .chirpReport(.init(
+                        detectAtLocalMs: detectMs,
+                        round: payload.round,
+                        peerId: self.localPeerKey
+                    )),
+                    to: nil
+                )
+                self.calibrateProgress = 0.8
+            }
+            chirp.playChirp(
+                durationMs: payload.durationMs,
+                atHostMs: payload.hostPlayAtMs,
+                clock: clock
+            )
+        } catch {
+            calibrateStatus = error.localizedDescription
+        }
+    }
+
+    private func broadcastPlaylist() {
+        let snap = playlist.snapshotPayload()
+        mesh.sendControl(
+            .playlist(.init(
+                currentId: snap.currentID,
+                tracks: snap.tracks.map { .init(id: $0.id, title: $0.title, votes: $0.votes) }
+            )),
+            to: nil
+        )
+    }
+
+    private func syncPlaylistUI() {
+        playlistTracks = playlist.ranked
+        currentTrackID = playlist.currentID
+    }
+
+    private func maybeBroadcastLightCue(level: Float) {
+        guard lightshowEnabled, level > 0.35 else { return }
+        let now = ClockSync.nowMs()
+        guard now - lastLightCueMs > 320 else { return }
+        lastLightCueMs = now
+        mesh.sendControl(
+            .lightCue(.init(atHostMs: now + 40, intensity: min(1, level * 1.4), hue: Float(lightshow.beatPhase))),
+            to: nil
+        )
+    }
+
+    private func startClockSyncLoop(isHost: Bool) {
+        clockSyncTask?.cancel()
+        guard !isHost else { return }
+        clockSyncTask = Task { [weak self] in
+            while !Task.isCancelled {
+                guard let self else { return }
+                let t0 = ClockSync.nowMs()
+                self.mesh.sendControl(.clockSync(.init(t0: t0, t1: nil, t2: nil)), to: nil)
+                try? await Task.sleep(nanoseconds: 2_500_000_000)
+                if self.route != .joinCalibrate && self.route != .joinLive && self.route != .joinConnecting {
+                    return
+                }
+            }
+        }
+    }
+}
