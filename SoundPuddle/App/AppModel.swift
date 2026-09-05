@@ -21,6 +21,7 @@ final class AppModel {
         case file(URL)
     }
 
+    // MARK: View-facing state
     var route: Route = .home
     var sessionTitle = ""
     var sessionMode: SessionMode = .party
@@ -40,11 +41,33 @@ final class AppModel {
         return nil
     }
 
-    var diagnosticsLine: String {
-        let lc = isLiveContainer ? "LC" : "native"
-        return "\(lc) · peers \(peers.count)/7 · underrun \(underrunCount) · \(linkQuality.rawValue)"
+    var isStreamPaused = false
+    var hostMonitorMuted = true
+    var joinVolume: Float = 1
+    var isMuted = false
+    var rosterNames: [String] = []
+    var lastRTT: Int?
+    var sessionStartedAt: Date?
+
+    var sessionElapsedLabel: String {
+        guard let start = sessionStartedAt else { return "00:00" }
+        let secs = max(0, Int(Date().timeIntervalSince(start)))
+        return String(format: "%02d:%02d", secs / 60, secs % 60)
     }
 
+    var rttLabel: String {
+        lastRTT.map { "\($0) ms" } ?? "—"
+    }
+
+    var diagnosticsLine: String {
+        let lc = isLiveContainer ? "LC" : "native"
+        let pause = isStreamPaused ? " · paused" : ""
+        return "\(lc) · peers \(peers.count)/7 · underrun \(underrunCount) · \(linkQuality.rawValue) · rtt \(rttLabel)\(pause)"
+    }
+
+    var peerCapWarning: Bool { peers.count >= 6 }
+
+    // MARK: Internals
     private let mesh: any MeshTransporting
     private let capture = AudioCaptureEngine()
     private let playback = AudioPlaybackEngine()
@@ -54,14 +77,22 @@ final class AppModel {
     private var joinTimeoutTask: Task<Void, Never>?
     private var qualityRecoveryTask: Task<Void, Never>?
     private var pingTask: Task<Void, Never>?
+    private var tickTask: Task<Void, Never>?
     private var underrunCount = 0
     private var activeAdvertisement: SessionAdvertisement?
     private var sessionActive = false
+    private var idleTimerHeld = false
+    private var welcomedPeerIDs = Set<String>()
+    private var pendingPingT: Int64?
+    private var interruptionObserver: NSObjectProtocol?
 
     init(mesh: (any MeshTransporting)? = nil) {
         self.mesh = mesh ?? MultipeerMeshTransport()
         capture.onFrame = { [weak self] packet in
-            Task { @MainActor in self?.mesh.sendAudio(packet, to: nil) }
+            Task { @MainActor in
+                guard let self, self.isStreaming, !self.isStreamPaused else { return }
+                self.mesh.sendAudio(packet, to: nil)
+            }
         }
         capture.onLevel = { [weak self] level in
             Task { @MainActor in self?.audioLevel = level }
@@ -77,9 +108,13 @@ final class AppModel {
                 self.scheduleQualityRecovery()
             }
         }
+        capture.monitorMuted = hostMonitorMuted
         listen()
         networkPrimer.prime()
+        observeAudioInterruptions()
     }
+
+    // MARK: Navigation
 
     func openHost() {
         showPermissionHint = true
@@ -123,6 +158,8 @@ final class AppModel {
         }
     }
 
+    // MARK: Host
+
     func startHosting() {
         let trimmed = sessionTitle.trimmingCharacters(in: .whitespacesAndNewlines)
         let title = trimmed.isEmpty ? String(localized: "host.defaultTitle") : trimmed
@@ -138,6 +175,7 @@ final class AppModel {
                 try sessionConfig.configure(for: sessionMode, role: .host)
                 mesh.acceptInvitations(true)
                 mesh.startHosting(advertisement: ad)
+                capture.monitorMuted = hostMonitorMuted
                 switch hostSource {
                 case .microphone:
                     try capture.start(source: .microphone)
@@ -145,10 +183,13 @@ final class AppModel {
                     try capture.start(source: .file(url))
                 }
                 isStreaming = true
+                isStreamPaused = false
                 sessionActive = true
-                IdleTimerGuard.pushActive()
+                sessionStartedAt = Date()
+                holdIdleTimer(true)
                 sendStreamStart()
                 startPingLoop()
+                startElapsedTick()
                 route = .hostLive
                 Haptics.success()
             } catch {
@@ -167,6 +208,29 @@ final class AppModel {
         route = .home
     }
 
+    func togglePause() {
+        guard route == .hostLive else { return }
+        isStreamPaused.toggle()
+        if isStreamPaused {
+            capture.setPaused(true)
+            mesh.sendControl(.streamStop(reason: "pause"), to: nil)
+            isStreaming = false
+        } else {
+            capture.setPaused(false)
+            isStreaming = true
+            sendStreamStart()
+        }
+        Haptics.light()
+    }
+
+    func toggleHostMonitor() {
+        hostMonitorMuted.toggle()
+        capture.monitorMuted = hostMonitorMuted
+        Haptics.light()
+    }
+
+    // MARK: Join
+
     func startBrowsing() {
         discovered = []
         mesh.startBrowsing()
@@ -182,13 +246,16 @@ final class AppModel {
         sessionMode = advertisement.mode
         route = .joinConnecting
         mesh.invite(peer)
+        // Timeout stays until joinLive — not cancelled on mere .connected
         joinTimeoutTask?.cancel()
         joinTimeoutTask = Task { [weak self] in
-            try? await Task.sleep(nanoseconds: 12_000_000_000)
+            try? await Task.sleep(nanoseconds: 15_000_000_000)
             guard let self, !Task.isCancelled else { return }
             if self.route == .joinConnecting {
                 self.lastError = AppError.timeout.errorDescription
+                self.teardownAll()
                 self.route = .joinBrowse
+                self.startBrowsing()
                 Haptics.warning()
             }
         }
@@ -200,10 +267,21 @@ final class AppModel {
         route = .home
     }
 
+    func toggleMute() {
+        isMuted.toggle()
+        applyJoinVolume()
+        Haptics.light()
+    }
+
+    func setJoinVolume(_ value: Float) {
+        joinVolume = max(0, min(1, value))
+        applyJoinVolume()
+    }
+
     func handleScenePhase(_ phase: ScenePhase) {
         switch phase {
         case .active:
-            if sessionActive { IdleTimerGuard.pushActive() }
+            if sessionActive { holdIdleTimer(true) }
             networkPrimer.prime()
         case .inactive, .background:
             break
@@ -212,7 +290,7 @@ final class AppModel {
         }
     }
 
-    // MARK: - Internals
+    // MARK: Event loop
 
     private func listen() {
         eventTask?.cancel()
@@ -239,21 +317,25 @@ final class AppModel {
             peers = mesh.connectedPeers
         case .connected(let peer):
             peers = mesh.connectedPeers
-            joinTimeoutTask?.cancel()
             if route == .joinConnecting {
                 mesh.sendControl(
                     .hello(.init(
-                        app: "1.1.0",
+                        app: "0.0.2",
                         peer: displayName,
                         fmtPref: AudioFormatSpec.canonical.token
                     )),
                     to: [peer]
                 )
             } else if route == .hostLive {
-                sendWelcome(to: peer)
-                broadcastRoster()
-                if isStreaming { sendStreamStart(to: [peer]) }
-                Haptics.light()
+                if !welcomedPeerIDs.contains(peer.id) {
+                    welcomedPeerIDs.insert(peer.id)
+                    sendWelcome(to: peer)
+                    broadcastRoster()
+                    if isStreaming && !isStreamPaused {
+                        sendStreamStart(to: [peer])
+                    }
+                    Haptics.light()
+                }
             }
         case .disconnected:
             peers = mesh.connectedPeers
@@ -264,12 +346,13 @@ final class AppModel {
                 startBrowsing()
                 Haptics.warning()
             } else if route == .hostLive {
+                welcomedPeerIDs = Set(peers.map(\.id))
                 broadcastRoster()
             }
         case .control(let message, let from):
             handleControl(message, from: from)
         case .audio(let packet, _):
-            if route == .joinLive {
+            if route == .joinLive && !isMuted {
                 playback.enqueue(packet: packet)
             }
         case .error(let error):
@@ -281,9 +364,14 @@ final class AppModel {
         switch message {
         case .hello:
             if route == .hostLive,
-               let peer = peers.first(where: { $0.displayName == from || $0.id == from }) {
+               let peer = peers.first(where: { $0.displayName == from || $0.id == from }),
+               !welcomedPeerIDs.contains(peer.id) {
+                welcomedPeerIDs.insert(peer.id)
                 sendWelcome(to: peer)
-                if isStreaming { sendStreamStart(to: [peer]) }
+                broadcastRoster()
+                if isStreaming && !isStreamPaused {
+                    sendStreamStart(to: [peer])
+                }
             }
         case .welcome(let payload):
             sessionTitle = payload.title
@@ -292,9 +380,10 @@ final class AppModel {
             }
         case .streamStart:
             beginJoinPlayback()
-        case .streamStop:
+        case .streamStop(let reason):
             playback.stop()
             isStreaming = false
+            isStreamPaused = (reason == "pause")
         case .reject(let code):
             lastError = (code == .full ? AppError.sessionFull : AppError.protocolMismatch).errorDescription
             teardownAll()
@@ -310,10 +399,17 @@ final class AppModel {
                 Haptics.warning()
             }
         case .ping(let t):
-            mesh.sendControl(.pong(t: t), to: nil)
+            if let peer = peers.first(where: { $0.displayName == from || $0.id == from }) {
+                mesh.sendControl(.pong(t: t), to: [peer])
+            } else {
+                mesh.sendControl(.pong(t: t), to: nil)
+            }
         case .pong(let t):
+            guard pendingPingT == nil || pendingPingT == t else { return }
             let now = Int64(Date().timeIntervalSince1970 * 1000)
-            let rtt = max(0, now - t)
+            let rtt = Int(max(0, now - t))
+            lastRTT = rtt
+            pendingPingT = nil
             if rtt > 180 {
                 linkQuality = .weak
             } else if rtt > 90 {
@@ -321,8 +417,8 @@ final class AppModel {
             } else if underrunCount < 2 {
                 linkQuality = .good
             }
-        case .peerRoster:
-            break
+        case .peerRoster(let roster):
+            rosterNames = roster.map(\.name)
         }
     }
 
@@ -356,25 +452,40 @@ final class AppModel {
             ControlMessage.RosterPeer(name: $0.displayName, id: $0.id)
         }
         mesh.sendControl(.peerRoster(peers: roster), to: nil)
+        rosterNames = roster.map(\.name)
     }
 
     private func beginJoinPlayback() {
+        guard route != .joinLive else { return }
         do {
             try sessionConfig.configure(for: sessionMode, role: .join)
             try playback.prepare(targetFrames: sessionMode.jitterTargetFrames)
+            applyJoinVolume()
             isStreaming = true
+            isStreamPaused = false
             sessionActive = true
             underrunCount = 0
             linkQuality = .good
-            IdleTimerGuard.pushActive()
+            sessionStartedAt = Date()
+            holdIdleTimer(true)
+            mesh.stopBrowsing()
+            joinTimeoutTask?.cancel()
+            joinTimeoutTask = nil
             startPingLoop()
+            startElapsedTick()
             route = .joinLive
             Haptics.success()
         } catch {
             lastError = error.localizedDescription
+            teardownAll()
             route = .joinBrowse
+            startBrowsing()
             Haptics.warning()
         }
+    }
+
+    private func applyJoinVolume() {
+        playback.outputVolume = isMuted ? 0 : joinVolume
     }
 
     private func startPingLoop() {
@@ -385,7 +496,19 @@ final class AppModel {
                 guard let self, !Task.isCancelled else { return }
                 guard self.route == .hostLive || self.route == .joinLive else { return }
                 let t = Int64(Date().timeIntervalSince1970 * 1000)
+                self.pendingPingT = t
                 self.mesh.sendControl(.ping(t: t), to: nil)
+            }
+        }
+    }
+
+    private func startElapsedTick() {
+        tickTask?.cancel()
+        tickTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                guard let self, !Task.isCancelled else { return }
+                self.audioLevel = self.audioLevel
             }
         }
     }
@@ -421,7 +544,66 @@ final class AppModel {
         }
     }
 
-    /// Tear down audio + mesh. Keep a single long-lived event listener.
+    private func observeAudioInterruptions() {
+        interruptionObserver = NotificationCenter.default.addObserver(
+            forName: AVAudioSession.interruptionNotification,
+            object: AVAudioSession.sharedInstance(),
+            queue: .main
+        ) { [weak self] note in
+            Task { @MainActor in self?.handleInterruption(note) }
+        }
+    }
+
+    private func handleInterruption(_ note: Notification) {
+        guard
+            let info = note.userInfo,
+            let typeValue = info[AVAudioSessionInterruptionTypeKey] as? UInt,
+            let type = AVAudioSession.InterruptionType(rawValue: typeValue)
+        else { return }
+
+        switch type {
+        case .began:
+            break
+        case .ended:
+            let options = (info[AVAudioSessionInterruptionOptionKey] as? UInt)
+                .flatMap(AVAudioSession.InterruptionOptions.init(rawValue:)) ?? []
+            guard options.contains(.shouldResume) else { return }
+            do {
+                if route == .hostLive {
+                    try sessionConfig.configure(for: sessionMode, role: .host)
+                    if !isStreamPaused {
+                        switch hostSource {
+                        case .microphone: try capture.start(source: .microphone)
+                        case .file(let url): try capture.start(source: .file(url))
+                        }
+                        capture.monitorMuted = hostMonitorMuted
+                        isStreaming = true
+                    }
+                } else if route == .joinLive {
+                    try sessionConfig.configure(for: sessionMode, role: .join)
+                    try playback.prepare(targetFrames: sessionMode.jitterTargetFrames)
+                    applyJoinVolume()
+                    isStreaming = true
+                }
+            } catch {
+                lastError = error.localizedDescription
+            }
+        @unknown default:
+            break
+        }
+    }
+
+    private func holdIdleTimer(_ hold: Bool) {
+        if hold {
+            guard !idleTimerHeld else { return }
+            IdleTimerGuard.pushActive()
+            idleTimerHeld = true
+        } else if idleTimerHeld {
+            IdleTimerGuard.popActive()
+            idleTimerHeld = false
+        }
+    }
+
     private func teardownAll() {
         joinTimeoutTask?.cancel()
         joinTimeoutTask = nil
@@ -429,22 +611,27 @@ final class AppModel {
         pingTask = nil
         qualityRecoveryTask?.cancel()
         qualityRecoveryTask = nil
+        tickTask?.cancel()
+        tickTask = nil
         capture.stop()
         playback.stop()
         mesh.disconnect()
         sessionConfig.deactivate()
-        if sessionActive {
-            IdleTimerGuard.popActive()
-        }
+        holdIdleTimer(false)
         sessionActive = false
         isStreaming = false
+        isStreamPaused = false
+        isMuted = false
         peers = []
         discovered = []
+        rosterNames = []
         audioLevel = 0
         activeAdvertisement = nil
         underrunCount = 0
         linkQuality = .good
+        welcomedPeerIDs.removeAll()
+        pendingPingT = nil
+        lastRTT = nil
+        sessionStartedAt = nil
     }
-
-    var peerCapWarning: Bool { peers.count >= 6 }
 }
