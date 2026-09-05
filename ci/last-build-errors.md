@@ -1,33 +1,23 @@
 # SoundPuddle CI build errors
 
-- SHA: `4ec9201c31ca364682dc9c8806e6f1bb25c72e03`
-- Run: 33956298904
+- SHA: `75618ae83b3983dd8701cb47e7d2ad6904e2cc2e`
+- Run: 33956486257
 - Xcode: Xcode 16.4
 
 ## Matching lines
 ```
-200:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Host/HostLiveView.swift:13:32: error: value of type 'AppModel' has no member 'sessionElapsedLabel'
-203:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinLiveView.swift:18:24: error: value of type 'AppModel' has no member 'sessionElapsedLabel'
-212:** BUILD FAILED **
+200:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:111:17: error: value of type 'AudioCaptureEngine' has no member 'monitorMuted'
+203:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:178:25: error: value of type 'AudioCaptureEngine' has no member 'monitorMuted'
+206:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:215:21: error: value of type 'AudioCaptureEngine' has no member 'setPaused'
+209:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:219:21: error: value of type 'AudioCaptureEngine' has no member 'setPaused'
+212:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:228:17: error: value of type 'AudioCaptureEngine' has no member 'monitorMuted'
+215:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:488:18: error: value of type 'AudioPlaybackEngine' has no member 'outputVolume'
+218:/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:579:33: error: value of type 'AudioCaptureEngine' has no member 'monitorMuted'
+227:** BUILD FAILED **
 ```
 
 ## Tail
 ```
-CreateBuildOperation
-
-** CLEAN SUCCEEDED **
-
-note: Using codesigning identity override: 
-ComputePackagePrebuildTargetDependencyGraph
-
-Prepare packages
-
-CreateBuildRequest
-
-SendProjectDescription
-
-CreateBuildOperation
-
 ComputeTargetDependencyGraph
 note: Building targets in dependency order
 note: Target dependency graph (1 target)
@@ -49,8 +39,8 @@ ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/X
 
 ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
 
-Build description signature: bea56a86edfb83dbdc79703e34fe8044
-Build description path: /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/XCBuildData/bea56a86edfb83dbdc79703e34fe8044.xcbuilddata
+Build description signature: 8ed77cb3e7fcf2cbc6b36b0436b8481f
+Build description path: /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/XCBuildData/8ed77cb3e7fcf2cbc6b36b0436b8481f.xcbuilddata
 ClangStatCache /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.5.sdk /Users/runner/work/SoundPuddle/SoundPuddle/build/SDKStatCaches.noindex/iphoneos18.5-22F76-a529daf784b3616c7c04a36aeb7f5c05.sdkstatcache
     cd /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle.xcodeproj
     /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_16.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.5.sdk -o /Users/runner/work/SoundPuddle/SoundPuddle/build/SDKStatCaches.noindex/iphoneos18.5-22F76-a529daf784b3616c7c04a36aeb7f5c05.sdkstatcache
@@ -63,13 +53,13 @@ CreateBuildDirectory /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Inte
     cd /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle.xcodeproj
     builtin-create-build-directory /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex
 
-CreateBuildDirectory /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products/Release-iphoneos
-    cd /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle.xcodeproj
-    builtin-create-build-directory /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products/Release-iphoneos
-
 WriteAuxiliaryFile /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle-746e37d11dd0800f6f83b801cdcfb2ca-VFS-iphoneos/all-product-headers.yaml
     cd /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle.xcodeproj
     write-file /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle-746e37d11dd0800f6f83b801cdcfb2ca-VFS-iphoneos/all-product-headers.yaml
+
+CreateBuildDirectory /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products/Release-iphoneos
+    cd /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle.xcodeproj
+    builtin-create-build-directory /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products/Release-iphoneos
 
 CreateBuildDirectory /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/EagerLinkingTBDs/Release-iphoneos
     cd /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle.xcodeproj
@@ -193,12 +183,27 @@ Failed frontend command:
 CompileSwift normal arm64 (in target 'SoundPuddle' from project 'SoundPuddle')
     cd /Users/runner/work/SoundPuddle/SoundPuddle
     
-/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Host/HostLiveView.swift:13:32: error: value of type 'AppModel' has no member 'sessionElapsedLabel'
-                    Text(model.sessionElapsedLabel)
-                         ~~~~~ ^~~~~~~~~~~~~~~~~~~
-/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Features/Join/JoinLiveView.swift:18:24: error: value of type 'AppModel' has no member 'sessionElapsedLabel'
-            Text(model.sessionElapsedLabel)
-                 ~~~~~ ^~~~~~~~~~~~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:111:17: error: value of type 'AudioCaptureEngine' has no member 'monitorMuted'
+        capture.monitorMuted = hostMonitorMuted
+        ~~~~~~~ ^~~~~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:178:25: error: value of type 'AudioCaptureEngine' has no member 'monitorMuted'
+                capture.monitorMuted = hostMonitorMuted
+                ~~~~~~~ ^~~~~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:215:21: error: value of type 'AudioCaptureEngine' has no member 'setPaused'
+            capture.setPaused(true)
+            ~~~~~~~ ^~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:219:21: error: value of type 'AudioCaptureEngine' has no member 'setPaused'
+            capture.setPaused(false)
+            ~~~~~~~ ^~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:228:17: error: value of type 'AudioCaptureEngine' has no member 'monitorMuted'
+        capture.monitorMuted = hostMonitorMuted
+        ~~~~~~~ ^~~~~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:488:18: error: value of type 'AudioPlaybackEngine' has no member 'outputVolume'
+        playback.outputVolume = isMuted ? 0 : joinVolume
+        ~~~~~~~~ ^~~~~~~~~~~~
+/Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/AppModel.swift:579:33: error: value of type 'AudioCaptureEngine' has no member 'monitorMuted'
+                        capture.monitorMuted = hostMonitorMuted
+                        ~~~~~~~ ^~~~~~~~~~~~
 
 SwiftDriver\ Compilation SoundPuddle normal arm64 com.apple.xcode.tools.swift.compiler (in target 'SoundPuddle' from project 'SoundPuddle')
     cd /Users/runner/work/SoundPuddle/SoundPuddle
