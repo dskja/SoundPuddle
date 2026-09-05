@@ -138,12 +138,20 @@ jobs:
           } > ci/last-build-errors.md
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin "${GITHUB_REF_NAME}" || true
           git add ci/last-build-errors.md
           if git diff --cached --quiet; then
             echo "No error file changes"
           else
             git commit -m "ci: capture build errors for ${GITHUB_SHA:0:7} [skip ci]"
-            git push origin "HEAD:${GITHUB_REF_NAME}"
+            # Avoid losing concurrent pushes from assemble / parallel jobs.
+            for i in 1 2 3 4; do
+              if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+                break
+              fi
+              git pull --rebase origin "${GITHUB_REF_NAME}" || true
+              sleep $((i * 2))
+            done
           fi
           exit 1
 

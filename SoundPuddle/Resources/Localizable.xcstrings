@@ -6,13 +6,13 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Der Tisch wird zur Anlage."
+            "value": "Raumklang. Sofort."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "The table becomes the system."
+            "value": "Room sound. Instantly."
           }
         }
       }
@@ -22,13 +22,13 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ein Song. Viele iPhones. Ein Schwarm."
+            "value": "Silent Disco im Mesh — lokal, ohne Cloud."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "One song. Many iPhones. One swarm."
+            "value": "Silent disco over mesh — local, no cloud."
           }
         }
       }
@@ -38,13 +38,13 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Schwarm starten"
+            "value": "Host starten"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Start swarm"
+            "value": "Start hosting"
           }
         }
       }
@@ -118,13 +118,13 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Schwarm vorbereiten"
+            "value": "Session öffnen"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Prepare swarm"
+            "value": "Open session"
           }
         }
       }
@@ -166,13 +166,13 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Song"
+            "value": "Datei"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Song"
+            "value": "File"
           }
         }
       }
@@ -182,13 +182,13 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bereit"
+            "value": "Session öffnen"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ready"
+            "value": "Open session"
           }
         }
       }
@@ -198,13 +198,13 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Schwarm beenden"
+            "value": "Beenden"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "End swarm"
+            "value": "End session"
           }
         }
       }
@@ -230,13 +230,13 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Fast voll — max. 7 Lautsprecher."
+            "value": "Raum wird voll — Multipeer unterstützt max. 7 Zuhörer."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Almost full — max 7 speakers."
+            "value": "Room getting full — Multipeer supports max 7 listeners."
           }
         }
       }
@@ -246,13 +246,13 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Schwärme in der Nähe"
+            "value": "In der Nähe"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nearby swarms"
+            "value": "Nearby"
           }
         }
       }
@@ -262,13 +262,13 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Noch kein Schwarm sichtbar."
+            "value": "Keine Pfütze in Reichweite. Host zuerst starten."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "No swarm visible yet."
+            "value": "No puddle in range. Start a host first."
           }
         }
       }
@@ -278,13 +278,13 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Aktualisieren"
+            "value": "Erneut suchen"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Refresh"
+            "value": "Search again"
           }
         }
       }
@@ -310,13 +310,13 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Im Feld"
+            "value": "Du hörst mit"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "In the field"
+            "value": "Listening"
           }
         }
       }
@@ -420,4 +420,1027 @@
     "link.okay": {
       "localizations": {
         "de": {
-    
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verbindung okay"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Link okay"
+          }
+        }
+      }
+    },
+    "link.weak": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verbindung schwach"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Link weak"
+          }
+        }
+      }
+    },
+    "mode.party": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Party"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Party"
+          }
+        }
+      }
+    },
+    "mode.tour": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tour"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tour"
+          }
+        }
+      }
+    },
+    "mode.cinema": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cinema"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cinema"
+          }
+        }
+      }
+    },
+    "mode.party.blurb": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Niedrige Latenz für Mixe und Mikrofon."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Low latency for mixes and mic."
+          }
+        }
+      }
+    },
+    "mode.tour.blurb": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stimme priorisiert für Führungen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Voice-first for guided tours."
+          }
+        }
+      }
+    },
+    "mode.cinema.blurb": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Datei-Stream für gemeinsamen Filmton."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "File stream for shared movie audio."
+          }
+        }
+      }
+    },
+    "error.sessionFull": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Session ist voll."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Session is full."
+          }
+        }
+      }
+    },
+    "error.protocolMismatch": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Protokollversion passt nicht."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Protocol version mismatch."
+          }
+        }
+      }
+    },
+    "error.timeout": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeitüberschreitung bei Verbindung."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connection timed out."
+          }
+        }
+      }
+    },
+    "error.hostGone": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Host ist weg."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Host is gone."
+          }
+        }
+      }
+    },
+    "error.browserInactive": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suche ist nicht aktiv."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Browse is inactive."
+          }
+        }
+      }
+    },
+    "error.peerMissing": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Peer nicht gefunden."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Peer not found."
+          }
+        }
+      }
+    },
+    "audio.level": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pegel"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Level"
+          }
+        }
+      }
+    },
+    "livecontainer.badge": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LiveContainer"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LiveContainer"
+          }
+        }
+      }
+    },
+    "livecontainer.banner.body": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Berechtigungen (Lokales Netzwerk, Mikrofon, Bluetooth) gehören zur LiveContainer-Host-App. Dateiauswahl: „Fix File Picker“ aktivieren. Für stabiles Audio Multitask-Modus vermeiden."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Permissions (Local Network, Mic, Bluetooth) belong to the LiveContainer host app. For files enable “Fix File Picker”. Avoid multitask mode for stable audio."
+          }
+        }
+      }
+    },
+    "livecontainer.tip.host": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In LiveContainer: Lokales Netz & Mikrofon in den LiveContainer-Einstellungen erlauben. Soft-Encryption ist aktiv."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In LiveContainer: allow Local Network & Microphone in LiveContainer settings. Soft encryption is active."
+          }
+        }
+      }
+    },
+    "livecontainer.tip.join": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In LiveContainer: Lokales Netz in den LiveContainer-Einstellungen erlauben, dann erneut suchen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In LiveContainer: allow Local Network in LiveContainer settings, then search again."
+          }
+        }
+      }
+    },
+    "livecontainer.tip.audio": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LiveContainer: Audio läuft stabiler ohne Multitasking."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LiveContainer: audio is more stable without multitasking."
+          }
+        }
+      }
+    },
+    "settings.displayName.title": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anzeigename"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Display name"
+          }
+        }
+      }
+    },
+    "settings.displayName.help": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wird anderen Geräten in der Nähe gezeigt. Gilt für neue Verbindungen (App-Neustart kann nötig sein)."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shown to nearby devices. Applies to new connections (app relaunch may be required)."
+          }
+        }
+      }
+    },
+    "settings.displayName.placeholder": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Name"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Name"
+          }
+        }
+      }
+    },
+    "settings.displayName.save": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Speichern"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save"
+          }
+        }
+      }
+    },
+    "error.permission.localNetwork": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lokales Netzwerk ist nicht erlaubt."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Local Network permission is denied."
+          }
+        }
+      }
+    },
+    "error.permission.microphone": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mikrofonzugriff ist nicht erlaubt."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Microphone permission is denied."
+          }
+        }
+      }
+    },
+    "error.permission.bluetooth": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bluetooth-Zugriff ist nicht erlaubt."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bluetooth permission is denied."
+          }
+        }
+      }
+    },
+    "error.cancelled": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abgebrochen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancelled."
+          }
+        }
+      }
+    },
+    "host.pause": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause"
+          }
+        }
+      }
+    },
+    "host.resume": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weiter"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resume"
+          }
+        }
+      }
+    },
+    "host.monitorMute": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monitor stumm"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mute monitor"
+          }
+        }
+      }
+    },
+    "host.monitorUnmute": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monitor an"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unmute monitor"
+          }
+        }
+      }
+    },
+    "host.pausedBanner": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stream pausiert — Gäste hören Stille."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stream paused — guests hear silence."
+          }
+        }
+      }
+    },
+    "join.volume": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lautstärke"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Volume"
+          }
+        }
+      }
+    },
+    "join.mute": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stumm"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mute"
+          }
+        }
+      }
+    },
+    "join.unmute": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ton an"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unmute"
+          }
+        }
+      }
+    },
+    "join.roster": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Im Puddle"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In the puddle"
+          }
+        }
+      }
+    },
+    "session.elapsed": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Laufzeit"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elapsed"
+          }
+        }
+      }
+    },
+    "link.rtt": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RTT"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RTT"
+          }
+        }
+      }
+    },
+    "host.setupBlurb": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Song wählen, dann Schwarm öffnen — Gäste ziehen sich in Reichweite."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick a track, then open the swarm — guests drag in close."
+          }
+        }
+      }
+    },
+    "host.pickTrack": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Track wählen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick track"
+          }
+        }
+      }
+    },
+    "host.startSchwarm": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schwarm starten"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start swarm"
+          }
+        }
+      }
+    },
+    "host.startSchwarm.blurb": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sobald Gäste da sind: Kalibrieren und abspielen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When guests arrive: calibrate and play."
+          }
+        }
+      }
+    },
+    "host.lightOn": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Licht aus"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lights off"
+          }
+        }
+      }
+    },
+    "host.lightOff": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Licht an"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lights on"
+          }
+        }
+      }
+    },
+    "schwarm.field": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Feld"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Field"
+          }
+        }
+      }
+    },
+    "schwarm.playlist": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Playlist"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Playlist"
+          }
+        }
+      }
+    },
+    "schwarm.advance": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nächster Track"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next track"
+          }
+        }
+      }
+    },
+    "schwarm.voteNext": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Für nächsten Track stimmen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vote for next track"
+          }
+        }
+      }
+    },
+    "join.dragHint": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zum Beitreten das Icon zur Mitte ziehen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drag the icon to the center to join."
+          }
+        }
+      }
+    },
+    "calibrate.title": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kalibrierung"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Calibration"
+          }
+        }
+      }
+    },
+    "calibrate.syncing": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uhren synchronisieren…"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Syncing clocks…"
+          }
+        }
+      }
+    },
+    "calibrate.holdStill": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ruhig halten — wir messen Positionen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hold still — measuring positions."
+          }
+        }
+      }
+    },
+    "calibrate.armed": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chirp bereit"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chirp armed"
+          }
+        }
+      }
+    },
+    "calibrate.done": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kalibrierung fertig"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Calibration done"
+          }
+        }
+      }
+    },
+    "calibrate.listening": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chirp hören…"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Listening for chirp…"
+          }
+        }
+      }
+    },
+    "calibrate.placed": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Platz zugewiesen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seat assigned"
+          }
+        }
+      }
+    },
+    "error.bonjour.livecontainer": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lokales Netzwerk blockiert (LiveContainer). In der LiveContainer-Host-App Local Network, Mikrofon und Bluetooth erlauben — nicht nur in SoundPuddle. Danach Session neu starten."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Local network blocked (LiveContainer). Allow Local Network, Microphone, and Bluetooth in the LiveContainer host app — not only in SoundPuddle. Then restart the session."
+          }
+        }
+      }
+    },
+    "error.bonjour.localNetwork": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lokales Netzwerk nicht erlaubt oder Bonjour-Timeout. Unter Einstellungen → SoundPuddle → Lokales Netzwerk einschalten, WLAN prüfen, dann Session neu starten."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Local network denied or Bonjour timed out. Enable Local Network under Settings → SoundPuddle, check Wi‑Fi, then restart the session."
+          }
+        }
+      }
+    },
+    "role.left": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Links"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Left"
+          }
+        }
+      }
+    },
+    "role.right": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rechts"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Right"
+          }
+        }
+      }
+    },
+    "role.mid": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mitte"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Center"
+          }
+        }
+      }
+    },
+    "role.farLeft": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weit links"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Far left"
+          }
+        }
+      }
+    },
+    "role.farRight": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weit rechts"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Far right"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

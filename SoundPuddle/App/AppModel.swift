@@ -489,7 +489,7 @@ final class AppModel {
                 playback.enqueue(packet: packet)
             }
         case .error(let error):
-            lastError = error.errorDescription
+            lastError = Self.friendlyErrorMessage(error)
         }
     }
 
@@ -621,7 +621,12 @@ final class AppModel {
     private func sendWelcome(to peer: MeshPeer) {
         guard let ad = activeAdvertisement else { return }
         mesh.sendControl(
-            .welcome(.init(sessionId: ad.sessionID, fmt: ad.formatToken, mode: ad.mode.rawValue, title: ad.title, serverTimeMs: ClockSync.nowMs()).timeIntervalSince1970 * 1000)
+            .welcome(.init(
+                sessionId: ad.sessionID,
+                fmt: ad.formatToken,
+                mode: ad.mode.rawValue,
+                title: ad.title,
+                serverTimeMs: ClockSync.nowMs()
             )),
             to: [peer]
         )
@@ -849,6 +854,19 @@ final class AppModel {
         hostPlayEpochMs = nil
         playlistTracks = []
         currentTrackID = nil
+    }
+
+
+    private static func friendlyErrorMessage(_ error: AppError) -> String? {
+        let raw = error.errorDescription ?? ""
+        let nsHints = ["NSNetServicesErrorDomain", "-72008", "Bonjour"]
+        if nsHints.contains(where: { raw.contains($0) }) {
+            if LiveContainerRuntime.isActive {
+                return String(localized: "error.bonjour.livecontainer")
+            }
+            return String(localized: "error.bonjour.localNetwork")
+        }
+        return error.errorDescription
     }
 
     // MARK: Schwarm helpers

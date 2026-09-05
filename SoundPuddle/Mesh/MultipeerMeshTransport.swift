@@ -20,6 +20,8 @@ final class MultipeerMeshTransport: NSObject, MeshTransporting {
     private var hostingCapacity = SessionAdvertisement.maxJoiners
     private var isHosting = false
     private var advertiseRetry = 0
+    private var browseRetry = 0
+    private var isBrowsing = false
     private var lastDiscoveryInfo: [String: String] = [:]
 
     private(set) var connectedPeers: [MeshPeer] = []
@@ -104,8 +106,15 @@ final class MultipeerMeshTransport: NSObject, MeshTransporting {
 
     func startBrowsing() {
         isHosting = false
+        isBrowsing = true
+        browseRetry = 0
         stopHosting()
+        beginBrowsing()
+    }
+
+    private func beginBrowsing() {
         browser?.stopBrowsingForPeers()
+        browser?.delegate = nil
         let b = MCNearbyServiceBrowser(peer: myPeerID, serviceType: serviceType)
         b.delegate = self
         browser = b
@@ -113,7 +122,10 @@ final class MultipeerMeshTransport: NSObject, MeshTransporting {
     }
 
     func stopBrowsing() {
+        isBrowsing = false
+        browseRetry = 0
         browser?.stopBrowsingForPeers()
+        browser?.delegate = nil
         browser = nil
     }
 
@@ -288,6 +300,14 @@ extension MultipeerMeshTransport: MCNearbyServiceBrowserDelegate {
 
     nonisolated func browser(_ browser: MCNearbyServiceBrowser, didNotStartBrowsingForPeers error: Error) {
         Task { @MainActor in
+            // Same LiveContainer / Local Network late-grant path as advertising.
+            if self.browseRetry < 3 {
+                self.browseRetry += 1
+                try? await Task.sleep(nanoseconds: UInt64(self.browseRetry) * 700_000_000)
+                guard self.isBrowsing else { return }
+                self.beginBrowsing()
+                return
+            }
             self.emit(.error(.mesh(Self.friendlyBonjourMessage(from: error))))
         }
     }

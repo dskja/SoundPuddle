@@ -22,6 +22,9 @@ targets:
       - path: SoundPuddle
         excludes:
           - Resources/Info.plist
+          - "**/.assemble"
+          - "**/.assemble/**"
+          - "**/.size_probe.txt"
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.dskja.SoundPuddle
@@ -51,6 +54,7 @@ targets:
         NSLocalNetworkUsageDescription: "SoundPuddle braucht lokales Netzwerk (Bonjour), um iPhones im selben Raum für Schwarm-Sessions zu finden — ohne Internet. In LiveContainer muss Local Network in der Host-App erlaubt sein."
         NSBonjourServices:
           - _soundpuddle._tcp
+          - _soundpuddle._udp
           - _soundpuddle._udp
         NSBluetoothAlwaysUsageDescription: Bluetooth hilft, Sessions aufzubauen, wenn kein gemeinsames WLAN verfügbar ist.
         NSMicrophoneUsageDescription: Das Mikrofon wird nur genutzt, wenn du eine Session hostest und Audio teilst.
