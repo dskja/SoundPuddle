@@ -527,4 +527,241 @@ final class AppModel {
             route = .joinBrowse
             startBrowsing()
             Haptics.warning()
-        case .goodb
+        case .goodbye:
+            if route == .joinLive || route == .joinConnecting || route == .joinCalibrate {
+                lastError = AppError.hostGone.errorDescription
+                teardownAll()
+                route = .joinBrowse
+                startBrowsing()
+                Haptics.warning()
+            }
+        case .ping(let t):
+            if let peer = peers.first(where: { $0.displayName == from || $0.id == from }) {
+                mesh.sendControl(.pong(t: t), to: [peer])
+            } else {
+                mesh.sendControl(.pong(t: t), to: nil)
+            }
+        case .pong(let t):
+            guard pendingPingT == nil || pendingPingT == t else { return }
+            let now = Int64(Date().timeIntervalSince1970 * 1000)
+            let rtt = Int(max(0, now - t))
+            lastRTT = rtt
+            pendingPingT = nil
+            if rtt > 180 {
+                linkQuality = .weak
+            } else if rtt > 90 {
+                linkQuality = .okay
+            } else if underrunCount < 2 {
+                linkQuality = .good
+            }
+        case .peerRoster(let roster):
+            rosterNames = roster.map(\.name)
+        case .clockSync(let payload):
+            handleClockSync(payload, from: from)
+        case .chirpSchedule(let payload):
+            handleChirpSchedule(payload)
+        case .chirpReport(let payload):
+            if route == .hostLive {
+                let delta = Double(payload.detectAtLocalMs - (hostPlayEpochMs ?? payload.detectAtLocalMs))
+                chirpDistances[payload.peerId] = ChirpCalibrator.distanceMeters(deltaMs: abs(delta) > 80 ? 12 : 6)
+                rebalanceField()
+            }
+        case .fieldMap(let payload):
+            applyFieldMap(payload)
+        case .roleAssign(let payload):
+            if payload.peerId == localPeerKey || payload.peerId == displayName {
+                myRole = SpeakerRole(rawValue: payload.role) ?? .mid
+                playback.speakerRole = myRole
+            }
+        case .playlist(let payload):
+            let tracks = payload.tracks.map {
+                PlaylistTrack(id: $0.id, title: $0.title, path: nil, votes: $0.votes)
+            }
+            playlist.replace(with: tracks, current: payload.currentId)
+            syncPlaylistUI()
+        case .vote(let payload):
+            if route == .hostLive {
+                playlist.vote(trackID: payload.trackId, from: payload.peerId)
+                syncPlaylistUI()
+                broadcastPlaylist()
+            }
+        case .lightCue(let payload):
+            let localAt = clock.localFromHostMs(payload.atHostMs)
+            let delay = Double(localAt - ClockSync.nowMs()) / 1000.0
+            let apply = { [weak self] in
+                self?.lightshow.applyCue(intensity: payload.intensity, colorHue: payload.hue)
+                self?.lightFlash = self?.lightshow.screenFlash ?? 0
+            }
+            if delay > 0.02 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: apply)
+            } else {
+                apply()
+            }
+        case .playSchedule(let payload):
+            hostPlayEpochMs = payload.startHostMs
+            let localAt = clock.localFromHostMs(payload.startHostMs)
+            let delay = Double(localAt - ClockSync.nowMs()) / 1000.0
+            if delay > 0 {
+                calibrateStatus = String(localized: "calibrate.armed")
+                Task {
+                    try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                    beginJoinPlayback()
+                }
+            } else {
+                beginJoinPlayback()
+            }
+        case .calibrateDone:
+            if route == .joinCalibrate {
+                calibrateProgress = 1
+                calibrateStatus = String(localized: "calibrate.done")
+            }
+        }
+    }
+
+    private func sendWelcome(to peer: MeshPeer) {
+        guard let ad = activeAdvertisement else { return }
+        mesh.sendControl(
+            .welcome(.init(sessionId: ad.sessionID, fmt: ad.formatToken, mode: ad.mode.rawValue, title: ad.title, serverTimeMs: ClockSync.nowMs()).timeIntervalSince1970 * 1000)
+            )),
+            to: [peer]
+        )
+    }
+
+    private func sendStreamStart(to peers: [MeshPeer]? = nil) {
+        mesh.sendControl(
+            .streamStart(.init(
+                epochMs: Int64(Date().timeIntervalSince1970 * 1000),
+                fmt: AudioFormatSpec.canonical.token,
+                frameMs: Int(AudioFormatSpec.canonical.frameDurationMs)
+            )),
+            to: peers
+        )
+    }
+
+    private func broadcastRoster() {
+        let roster = mesh.connectedPeers.map {
+            ControlMessage.RosterPeer(name: $0.displayName, id: $0.id)
+        }
+        mesh.sendControl(.peerRoster(peers: roster), to: nil)
+        rosterNames = roster.map(\.name)
+    }
+
+    private func beginJoinPlayback() {
+        guard route != .joinLive else {
+            isStreaming = true
+            isStreamPaused = false
+            return
+        }
+        do {
+            try sessionConfig.configure(for: sessionMode, role: .join)
+            try playback.prepare(targetFrames: sessionMode.jitterTargetFrames)
+            playback.speakerRole = myRole
+            applyJoinVolume()
+            isStreaming = true
+            isStreamPaused = false
+            sessionActive = true
+            underrunCount = 0
+            linkQuality = .good
+            sessionStartedAt = Date()
+            holdIdleTimer(true)
+            mesh.stopBrowsing()
+            joinTimeoutTask?.cancel()
+            joinTimeoutTask = nil
+            chirp.stop()
+            startPingLoop()
+            startElapsedTick()
+            route = .joinLive
+            Haptics.success()
+        } catch {
+            lastError = error.localizedDescription
+            teardownAll()
+            route = .joinBrowse
+            startBrowsing()
+            Haptics.warning()
+        }
+    }
+
+    private func applyJoinVolume() {
+        playback.outputVolume = isMuted ? 0 : joinVolume
+    }
+
+    private func startPingLoop() {
+        pingTask?.cancel()
+        pingTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: 3_000_000_000)
+                guard let self, !Task.isCancelled else { return }
+                guard self.route == .hostLive || self.route == .joinLive else { return }
+                let t = Int64(Date().timeIntervalSince1970 * 1000)
+                self.pendingPingT = t
+                self.mesh.sendControl(.ping(t: t), to: nil)
+            }
+        }
+    }
+
+    private func startElapsedTick() {
+        tickTask?.cancel()
+        tickTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                guard let self, !Task.isCancelled else { return }
+                self.lightFlash = self.lightshow.screenFlash
+                self.audioLevel = self.audioLevel
+            }
+        }
+    }
+
+    private func scheduleQualityRecovery() {
+        qualityRecoveryTask?.cancel()
+        qualityRecoveryTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 4_000_000_000)
+            guard let self, !Task.isCancelled else { return }
+            if self.underrunCount > 0 {
+                self.underrunCount = max(0, self.underrunCount - 2)
+            }
+            if self.underrunCount == 0 {
+                self.linkQuality = .good
+            } else if self.underrunCount <= 3 {
+                self.linkQuality = .okay
+            }
+        }
+    }
+
+    private func requestMicrophonePermission() async throws {
+        let session = AVAudioSession.sharedInstance()
+        let granted: Bool
+        if #available(iOS 17.0, *) {
+            granted = await AVAudioApplication.requestRecordPermission()
+        } else {
+            granted = await withCheckedContinuation { cont in
+                session.requestRecordPermission { cont.resume(returning: $0) }
+            }
+        }
+        if !granted {
+            throw AppError.permissionDenied(.microphone)
+        }
+    }
+
+    private func observeAudioInterruptions() {
+        interruptionObserver = NotificationCenter.default.addObserver(
+            forName: AVAudioSession.interruptionNotification,
+            object: AVAudioSession.sharedInstance(),
+            queue: .main
+        ) { [weak self] note in
+            Task { @MainActor in self?.handleInterruption(note) }
+        }
+    }
+
+    private func handleInterruption(_ note: Notification) {
+        guard
+            let info = note.userInfo,
+            let typeValue = info[AVAudioSessionInterruptionTypeKey] as? UInt,
+            let type = AVAudioSession.InterruptionType(rawValue: typeValue)
+        else { return }
+
+        switch type {
+        case .began:
+            break
+        case .ended:
+            let options = (info[AVAudioSessionInterruptionOptionKey] as? UInt)
+                .flatMap(AVAudioSession.Interr
