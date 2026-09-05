@@ -8,12 +8,19 @@ final class LocalNetworkPrimer {
     func prime() {
         let params = NWParameters()
         params.includePeerToPeer = true
-        let descriptor: NWBrowser.Descriptor = .bonjour(type: "_soundpuddle._tcp", domain: nil)
+
+        let serviceType = "_soundpuddle._tcp"
+        let serviceDomain: String? = nil
+        let descriptor = NWBrowser.Descriptor.bonjour(type: serviceType, domain: serviceDomain)
+
         let browser = NWBrowser(for: descriptor, using: params)
-        browser.stateUpdateHandler = { (_: NWBrowser.State, _: NWBrowser.State?) in }
-        browser.browseResultsChangedHandler = { (_: Set<NWBrowser.Result>, _: Set<NWBrowser.Result.Change>) in }
-        browser.start(queue: .main)
+        let stateHandler: (NWBrowser.State) -> Void = { _ in }
+        let resultsHandler: (Set<NWBrowser.Result>, Set<NWBrowser.Result.Change>) -> Void = { _, _ in }
+        browser.stateUpdateHandler = stateHandler
+        browser.browseResultsChangedHandler = resultsHandler
+        browser.start(queue: DispatchQueue.main)
         self.browser = browser
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
             self?.browser?.cancel()
             self?.browser = nil
