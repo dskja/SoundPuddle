@@ -1,7 +1,7 @@
 # SoundPuddle CI build errors
 
-- SHA: `12d24fe90a4e26f077ceaa5a1575ea52ecae84a8`
-- Run: 33960516241
+- SHA: `d972863b0fae17e117fb73e5d6436bacbd538582`
+- Run: 33960612470
 - Xcode: Xcode 16.4
 
 ## Matching lines
@@ -34,13 +34,13 @@
 ## Tail
 ```
 
-MkDir /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/assetcatalog_output/thinned (in target 'SoundPuddle' from project 'SoundPuddle')
-    cd /Users/runner/work/SoundPuddle/SoundPuddle
-    /bin/mkdir -p /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/assetcatalog_output/thinned
-
 MkDir /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/assetcatalog_output/unthinned (in target 'SoundPuddle' from project 'SoundPuddle')
     cd /Users/runner/work/SoundPuddle/SoundPuddle
     /bin/mkdir -p /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/assetcatalog_output/unthinned
+
+MkDir /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/assetcatalog_output/thinned (in target 'SoundPuddle' from project 'SoundPuddle')
+    cd /Users/runner/work/SoundPuddle/SoundPuddle
+    /bin/mkdir -p /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/assetcatalog_output/thinned
 
 GenerateAssetSymbols /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Resources/Assets.xcassets (in target 'SoundPuddle' from project 'SoundPuddle')
     cd /Users/runner/work/SoundPuddle/SoundPuddle
