@@ -9,7 +9,11 @@ final class AudioSessionConfigurator {
         case (_, .host):
             try session.setCategory(.playAndRecord, mode: .default, options: [.allowBluetoothA2DP, .defaultToSpeaker, .mixWithOthers])
         case (_, .join):
-            try session.setCategory(.playback, mode: .default, options: [.allowBluetoothA2DP])
+            var options: AVAudioSession.CategoryOptions = [.allowBluetoothA2DP]
+            if LiveContainerRuntime.isActive {
+                options.insert(.mixWithOthers)
+            }
+            try session.setCategory(.playback, mode: .default, options: options)
         }
         try session.setPreferredSampleRate(AudioFormatSpec.canonical.sampleRate)
         try session.setActive(true, options: [])

@@ -48,6 +48,7 @@ final class AudioCaptureEngine: NSObject {
         engine.inputNode.removeTap(onBus: 0)
         previewPlayer.stop()
         if engine.isRunning { engine.stop() }
+        engine.reset()
         file = nil
         assembler.reset()
     }
@@ -69,7 +70,7 @@ final class AudioCaptureEngine: NSObject {
 
         // Read file in chunks on timer approximating realtime
         let frameSamples = Int(AudioFormatSpec.canonical.samplesPerFrame)
-        displayLinkTimer = Timer.scheduledTimer(withTimeInterval: AudioFormatSpec.canonical.frameDurationMs / 1000.0, repeats: true) { [weak self] _ in
+        let timer = Timer(timeInterval: AudioFormatSpec.canonical.frameDurationMs / 1000.0, repeats: true) { [weak self] _ in
             guard let self, let file = self.file else { return }
             guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: AVAudioFrameCount(frameSamples * 2)) else { return }
             do {
@@ -83,6 +84,8 @@ final class AudioCaptureEngine: NSObject {
                 // loop or stop silently
             }
         }
+        RunLoop.main.add(timer, forMode: .common)
+        displayLinkTimer = timer
     }
 
     private func handleIncoming(_ buffer: AVAudioPCMBuffer) {

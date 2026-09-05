@@ -85,6 +85,11 @@ final class JitterBuffer: @unchecked Sendable {
         return nil
     }
 
+    var hasStarted: Bool {
+        lock.lock(); defer { lock.unlock() }
+        return started
+    }
+
     var bufferedCount: Int {
         lock.lock(); defer { lock.unlock() }
         return queue.count

@@ -35,6 +35,7 @@ final class AudioPlaybackEngine {
         pumpTimer = nil
         player.stop()
         if engine.isRunning { engine.stop() }
+        engine.reset()
         jitter.reset()
     }
 
@@ -44,16 +45,20 @@ final class AudioPlaybackEngine {
     }
 
     private func startPump() {
-        pumpTimer = Timer.scheduledTimer(withTimeInterval: format.frameDurationMs / 1000.0, repeats: true) { [weak self] _ in
+        let timer = Timer(timeInterval: format.frameDurationMs / 1000.0, repeats: true) { [weak self] _ in
             self?.pump()
         }
+        RunLoop.main.add(timer, forMode: .common)
+        pumpTimer = timer
     }
 
     private func pump() {
         playQueue.async { [weak self] in
             guard let self, self.isRunning else { return }
             guard let pcm = self.jitter.pop() else {
-                DispatchQueue.main.async { self.onUnderrun?() }
+                if self.jitter.hasStarted {
+                    DispatchQueue.main.async { self.onUnderrun?() }
+                }
                 return
             }
             let data = pcm.isEmpty ? Data(count: self.format.bytesPerFrame) : pcm
