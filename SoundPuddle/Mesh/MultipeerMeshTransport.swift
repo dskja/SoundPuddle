@@ -114,7 +114,7 @@ final class MultipeerMeshTransport: NSObject, MeshTransporting {
 
     private func resolve(_ peers: [MeshPeer]?) -> [MCPeerID] {
         guard let peers else { return session.connectedPeers }
-        let names = Set(peers.map(\ .displayName))
+        let names = Set(peers.map { $0.displayName })
         return session.connectedPeers.filter { names.contains($0.displayName) }
     }
 
