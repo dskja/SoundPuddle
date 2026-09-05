@@ -16,7 +16,7 @@ jobs:
     name: SoundPuddle unsigned IPA
     runs-on: macos-15
     permissions:
-      contents: read
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -76,7 +76,10 @@ jobs:
         run: brew install xcodegen
 
       - name: Generate Xcode project
-        run: xcodegen generate
+        run: |
+          set -euo pipefail
+          xcodegen generate
+          xcodebuild -list -project SoundPuddle.xcodeproj | tee xcode-list.txt
 
       - name: Build Release iphoneos (unsigned)
         run: |
@@ -100,10 +103,37 @@ jobs:
           {
             echo "## xcodebuild errors"
             echo '```'
-            grep -nE "error:|fatal error:|BUILD FAILED|warning:.*Main actor|cannot be used to satisfy" build-unsigned.log || echo "(no matching error lines)"
+            grep -nE "error:|fatal error:|BUILD FAILED|cannot |unable to|not found" build-unsigned.log || echo "(no matching error lines)"
+            echo '```'
+            echo
+            echo "## log tail"
+            echo '```'
+            tail -n 120 build-unsigned.log
             echo '```'
           } | tee -a "$GITHUB_STEP_SUMMARY"
           exit $STATUS
+
+      - name: Publish build errors to branch
+        if: failure()
+        run: |
+          set -euo pipefail
+          {
+            echo "# CI build errors from ${GITHUB_SHA}"
+            echo
+            echo "## Matched error lines"
+            grep -nE "error:|fatal error:|BUILD FAILED|cannot |unable to|not found" build-unsigned.log || echo "(none)"
+            echo
+            echo "## Full log tail"
+            tail -n 200 build-unsigned.log || true
+            echo
+            echo "## xcodebuild -list"
+            cat xcode-list.txt || true
+          } > ci-errors.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ci-errors.txt
+          git commit -m "CI: capture unsigned build errors [skip ci]" || exit 0
+          git push origin "HEAD:${GITHUB_REF_NAME}"
 
       - name: Package unsigned IPA
         run: |
@@ -145,5 +175,7 @@ jobs:
             build-unsigned.log
             xcode-version.txt
             ios-sdk-version.txt
+            ci-errors.txt
+            xcode-list.txt
           if-no-files-found: warn
           retention-days: 14
