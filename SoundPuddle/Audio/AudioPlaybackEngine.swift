@@ -16,6 +16,8 @@ final class AudioPlaybackEngine {
     var outputVolume: Float = 1 {
         didSet { engine.mainMixerNode.outputVolume = max(0, min(1, outputVolume)) }
     }
+    /// Join-side spatial pan for mono streams.
+    var speakerRole: SpeakerRole = .mid
 
     init(targetFrames: Int = 3) {
         jitter = JitterBuffer(targetFrames: targetFrames)
@@ -45,7 +47,8 @@ final class AudioPlaybackEngine {
 
     func enqueue(packet: Data) {
         guard let decoded = AudioPacketCodec.decode(packet) else { return }
-        jitter.push(seq: decoded.header.seq, pcm: decoded.pcm)
+        let pcm = speakerRole == .mid ? decoded.pcm : SpatialRouter.applyPan(decoded.pcm, role: speakerRole)
+        jitter.push(seq: decoded.header.seq, pcm: pcm)
     }
 
     private func startPump() {

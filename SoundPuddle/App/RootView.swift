@@ -19,18 +19,27 @@ struct RootView: View {
                     JoinDiscoverView()
                 case .joinConnecting:
                     JoinConnectingView()
+                case .joinCalibrate:
+                    JoinCalibrateView()
                 case .joinLive:
                     JoinLiveView()
                 }
             }
             .transition(.opacity.combined(with: .scale(scale: 0.985)))
+
+            if model.lightFlash > 0.02 {
+                Theme.lime.opacity(model.lightFlash * 0.35)
+                    .ignoresSafeArea()
+                    .allowsHitTesting(false)
+                    .animation(.easeOut(duration: 0.12), value: model.lightFlash)
+            }
         }
         .animation(Motion.route, value: model.route)
         .onChange(of: scenePhase) { _, phase in
             model.handleScenePhase(phase)
         }
         .overlay(alignment: .top) {
-            if model.route == .hostLive || model.route == .joinLive {
+            if model.route == .hostLive || model.route == .joinLive || model.route == .joinCalibrate {
                 Text(model.diagnosticsLine)
                     .font(Theme.mono)
                     .foregroundStyle(Theme.textMuted)

@@ -10,6 +10,17 @@ enum ControlMessage: Equatable, Sendable {
     case pong(t: Int64)
     case goodbye(reason: String)
     case reject(code: RejectCode)
+    // Schwarm 0.0.3
+    case clockSync(ClockSyncPayload)
+    case chirpSchedule(ChirpSchedulePayload)
+    case chirpReport(ChirpReportPayload)
+    case fieldMap(FieldMapPayload)
+    case roleAssign(RoleAssignPayload)
+    case playlist(PlaylistPayload)
+    case vote(VotePayload)
+    case lightCue(LightCuePayload)
+    case playSchedule(PlaySchedulePayload)
+    case calibrateDone(CalibrateDonePayload)
 
     enum RejectCode: String, Codable, Sendable {
         case full
@@ -21,6 +32,8 @@ enum ControlMessage: Equatable, Sendable {
         var app: String
         var peer: String
         var fmtPref: String
+        var deviceModel: String?
+        var speakerQuality: Float?
     }
 
     struct WelcomePayload: Codable, Equatable, Sendable {
@@ -42,6 +55,77 @@ enum ControlMessage: Equatable, Sendable {
         var id: String
     }
 
+    struct ClockSyncPayload: Codable, Equatable, Sendable {
+        var t0: Int64
+        var t1: Int64?
+        var t2: Int64?
+    }
+
+    struct ChirpSchedulePayload: Codable, Equatable, Sendable {
+        var hostPlayAtMs: Int64
+        var frequencyHz: Double
+        var durationMs: Int
+        var round: Int
+    }
+
+    struct ChirpReportPayload: Codable, Equatable, Sendable {
+        var detectAtLocalMs: Int64
+        var round: Int
+        var peerId: String
+    }
+
+    struct FieldSeatPayload: Codable, Equatable, Sendable {
+        var id: String
+        var name: String
+        var role: String
+        var angleDeg: Double
+        var distanceM: Double
+    }
+
+    struct FieldMapPayload: Codable, Equatable, Sendable {
+        var version: Int
+        var seats: [FieldSeatPayload]
+    }
+
+    struct RoleAssignPayload: Codable, Equatable, Sendable {
+        var peerId: String
+        var role: String
+        var angleDeg: Double
+        var distanceM: Double
+    }
+
+    struct PlaylistTrackPayload: Codable, Equatable, Sendable {
+        var id: String
+        var title: String
+        var votes: Int
+    }
+
+    struct PlaylistPayload: Codable, Equatable, Sendable {
+        var currentId: String?
+        var tracks: [PlaylistTrackPayload]
+    }
+
+    struct VotePayload: Codable, Equatable, Sendable {
+        var trackId: String
+        var peerId: String
+    }
+
+    struct LightCuePayload: Codable, Equatable, Sendable {
+        var atHostMs: Int64
+        var intensity: Float
+        var hue: Float
+    }
+
+    struct PlaySchedulePayload: Codable, Equatable, Sendable {
+        var trackId: String
+        var startHostMs: Int64
+    }
+
+    struct CalibrateDonePayload: Codable, Equatable, Sendable {
+        var peerId: String
+        var ok: Bool
+    }
+
     var msgType: UInt8 {
         switch self {
         case .hello: return 1
@@ -53,6 +137,16 @@ enum ControlMessage: Equatable, Sendable {
         case .pong: return 7
         case .goodbye: return 8
         case .reject: return 9
+        case .clockSync: return 10
+        case .chirpSchedule: return 11
+        case .chirpReport: return 12
+        case .fieldMap: return 13
+        case .roleAssign: return 14
+        case .playlist: return 15
+        case .vote: return 16
+        case .lightCue: return 17
+        case .playSchedule: return 18
+        case .calibrateDone: return 19
         }
     }
 }
@@ -78,6 +172,26 @@ enum ControlCodec {
             payloadData = try JSONEncoder().encode(["reason": reason])
         case .reject(let code):
             payloadData = try JSONEncoder().encode(["code": code.rawValue])
+        case .clockSync(let p):
+            payloadData = try JSONEncoder().encode(p)
+        case .chirpSchedule(let p):
+            payloadData = try JSONEncoder().encode(p)
+        case .chirpReport(let p):
+            payloadData = try JSONEncoder().encode(p)
+        case .fieldMap(let p):
+            payloadData = try JSONEncoder().encode(p)
+        case .roleAssign(let p):
+            payloadData = try JSONEncoder().encode(p)
+        case .playlist(let p):
+            payloadData = try JSONEncoder().encode(p)
+        case .vote(let p):
+            payloadData = try JSONEncoder().encode(p)
+        case .lightCue(let p):
+            payloadData = try JSONEncoder().encode(p)
+        case .playSchedule(let p):
+            payloadData = try JSONEncoder().encode(p)
+        case .calibrateDone(let p):
+            payloadData = try JSONEncoder().encode(p)
         }
 
         var data = Data(capacity: 4 + payloadData.count)
@@ -127,6 +241,26 @@ enum ControlCodec {
             let obj = try decoder.decode([String: String].self, from: payload)
             let code = ControlMessage.RejectCode(rawValue: obj["code"] ?? "busy") ?? .busy
             return .reject(code: code)
+        case 10:
+            return .clockSync(try decoder.decode(ControlMessage.ClockSyncPayload.self, from: payload))
+        case 11:
+            return .chirpSchedule(try decoder.decode(ControlMessage.ChirpSchedulePayload.self, from: payload))
+        case 12:
+            return .chirpReport(try decoder.decode(ControlMessage.ChirpReportPayload.self, from: payload))
+        case 13:
+            return .fieldMap(try decoder.decode(ControlMessage.FieldMapPayload.self, from: payload))
+        case 14:
+            return .roleAssign(try decoder.decode(ControlMessage.RoleAssignPayload.self, from: payload))
+        case 15:
+            return .playlist(try decoder.decode(ControlMessage.PlaylistPayload.self, from: payload))
+        case 16:
+            return .vote(try decoder.decode(ControlMessage.VotePayload.self, from: payload))
+        case 17:
+            return .lightCue(try decoder.decode(ControlMessage.LightCuePayload.self, from: payload))
+        case 18:
+            return .playSchedule(try decoder.decode(ControlMessage.PlaySchedulePayload.self, from: payload))
+        case 19:
+            return .calibrateDone(try decoder.decode(ControlMessage.CalibrateDonePayload.self, from: payload))
         default:
             return nil
         }

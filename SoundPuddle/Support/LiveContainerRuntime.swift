@@ -26,8 +26,10 @@ enum LiveContainerRuntime {
         return false
     }
 
+    /// LiveContainer: `.none` avoids Multipeer/Bonjour failures (NSNetServices -72008)
+    /// when the guest sandbox can't complete encrypted peer handshakes.
     static var preferredEncryption: EncryptionPreference {
-        isActive ? .optional : .required
+        isActive ? .none : .required
     }
 
     enum EncryptionPreference {

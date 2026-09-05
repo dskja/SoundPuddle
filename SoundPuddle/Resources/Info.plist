@@ -36,11 +36,12 @@
 		<string>Fonts/IBMPlexMono-Regular.ttf</string>
 	</array>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>SoundPuddle findet und verbindet iPhones im selben Raum für lokale Silent-Disco-Sessions — ohne Internet.</string>
+	<string>SoundPuddle braucht lokales Netzwerk (Bonjour), um iPhones im selben Raum für Schwarm-Sessions zu finden — ohne Internet. In LiveContainer muss Local Network in der Host-App erlaubt sein.</string>
 	<key>NSBonjourServices</key>
 	<array>
 		<string>_soundpuddle._tcp</string>
 		<string>_soundpuddle._udp</string>
+		<string>_mqtt._tcp</string>
 	</array>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>Bluetooth hilft, Sessions aufzubauen, wenn kein gemeinsames WLAN verfügbar ist.</string>

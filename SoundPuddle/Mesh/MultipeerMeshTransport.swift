@@ -5,7 +5,7 @@ import UIKit
 @MainActor
 final class MultipeerMeshTransport: NSObject, MeshTransporting {
     private let serviceType = SessionAdvertisement.serviceType
-    private let myPeerID: MCPeerID
+    private var myPeerID: MCPeerID
     private var session: MCSession
     private var advertiser: MCNearbyServiceAdvertiser?
     private var browser: MCNearbyServiceBrowser?
@@ -19,6 +19,10 @@ final class MultipeerMeshTransport: NSObject, MeshTransporting {
     private var autoAcceptInvitations = true
     private var hostingCapacity = SessionAdvertisement.maxJoiners
     private var isHosting = false
+    private var advertiseRetry = 0
+    private var browseRetry = 0
+    private var isBrowsing = false
+    private var lastDiscoveryInfo: [String: String] = [:]
 
     private(set) var connectedPeers: [MeshPeer] = []
 
@@ -30,9 +34,40 @@ final class MultipeerMeshTransport: NSObject, MeshTransporting {
         }
     }
 
-    override init() {
+    /// Bonjour/Multipeer rejects odd Unicode peer names in some LiveContainer sandboxes.
+    private static func sanitizedDisplayName() -> String {
         let stored = UserDefaults.standard.string(forKey: "displayName")
-        let name = String((stored ?? UIDevice.current.name).prefix(20))
+        let raw = stored ?? UIDevice.current.name
+        let allowed = CharacterSet.alphanumerics.union(.whitespaces)
+        let cleaned = String(raw.unicodeScalars.map { allowed.contains($0) ? Character($0) : "-" })
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let clipped = String(cleaned.prefix(20))
+        return clipped.isEmpty ? "iPhone" : clipped
+    }
+
+    private static func compactDiscoveryInfo(_ info: [String: String]) -> [String: String] {
+        var out: [String: String] = [:]
+        for (key, value) in info {
+            out[String(key.prefix(20))] = String(value.prefix(60))
+        }
+        return out
+    }
+
+    private static func friendlyBonjourMessage(from error: Error) -> String {
+        let ns = error as NSError
+        let isNetService = ns.domain.contains("NetService") || ns.domain.contains("DNS")
+        let is72008 = ns.code == -72008 || ns.localizedDescription.contains("-72008")
+        if isNetService || is72008 {
+            if LiveContainerRuntime.isActive {
+                return String(localized: "error.bonjour.livecontainer")
+            }
+            return String(localized: "error.bonjour.localNetwork")
+        }
+        return error.localizedDescription
+    }
+
+    override init() {
+        let name = Self.sanitizedDisplayName()
         myPeerID = MCPeerID(displayName: name)
         session = MCSession(peer: myPeerID, securityIdentity: nil, encryptionPreference: Self.encryptionPreference)
         super.init()
@@ -42,11 +77,18 @@ final class MultipeerMeshTransport: NSObject, MeshTransporting {
     func startHosting(advertisement: SessionAdvertisement) {
         isHosting = true
         hostingCapacity = advertisement.capacity
+        advertiseRetry = 0
+        lastDiscoveryInfo = Self.compactDiscoveryInfo(advertisement.discoveryInfo)
         stopBrowsing()
+        beginAdvertising()
+    }
+
+    private func beginAdvertising() {
         advertiser?.stopAdvertisingPeer()
+        advertiser?.delegate = nil
         let adv = MCNearbyServiceAdvertiser(
             peer: myPeerID,
-            discoveryInfo: advertisement.discoveryInfo,
+            discoveryInfo: lastDiscoveryInfo,
             serviceType: serviceType
         )
         adv.delegate = self
@@ -56,14 +98,23 @@ final class MultipeerMeshTransport: NSObject, MeshTransporting {
 
     func stopHosting() {
         advertiser?.stopAdvertisingPeer()
+        advertiser?.delegate = nil
         advertiser = nil
         isHosting = false
+        advertiseRetry = 0
     }
 
     func startBrowsing() {
         isHosting = false
+        isBrowsing = true
+        browseRetry = 0
         stopHosting()
+        beginBrowsing()
+    }
+
+    private func beginBrowsing() {
         browser?.stopBrowsingForPeers()
+        browser?.delegate = nil
         let b = MCNearbyServiceBrowser(peer: myPeerID, serviceType: serviceType)
         b.delegate = self
         browser = b
@@ -71,7 +122,10 @@ final class MultipeerMeshTransport: NSObject, MeshTransporting {
     }
 
     func stopBrowsing() {
+        isBrowsing = false
+        browseRetry = 0
         browser?.stopBrowsingForPeers()
+        browser?.delegate = nil
         browser = nil
     }
 
@@ -212,7 +266,15 @@ extension MultipeerMeshTransport: MCNearbyServiceAdvertiserDelegate {
 
     nonisolated func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didNotStartAdvertisingPeer error: Error) {
         Task { @MainActor in
-            self.emit(.error(.mesh(error.localizedDescription)))
+            // Late Local Network permission / LiveContainer Bonjour flakiness — retry a few times.
+            if self.advertiseRetry < 3 {
+                self.advertiseRetry += 1
+                try? await Task.sleep(nanoseconds: UInt64(self.advertiseRetry) * 700_000_000)
+                guard self.isHosting else { return }
+                self.beginAdvertising()
+                return
+            }
+            self.emit(.error(.mesh(Self.friendlyBonjourMessage(from: error))))
         }
     }
 }
@@ -238,7 +300,15 @@ extension MultipeerMeshTransport: MCNearbyServiceBrowserDelegate {
 
     nonisolated func browser(_ browser: MCNearbyServiceBrowser, didNotStartBrowsingForPeers error: Error) {
         Task { @MainActor in
-            self.emit(.error(.mesh(error.localizedDescription)))
+            // Same LiveContainer / Local Network late-grant path as advertising.
+            if self.browseRetry < 3 {
+                self.browseRetry += 1
+                try? await Task.sleep(nanoseconds: UInt64(self.browseRetry) * 700_000_000)
+                guard self.isBrowsing else { return }
+                self.beginBrowsing()
+                return
+            }
+            self.emit(.error(.mesh(Self.friendlyBonjourMessage(from: error))))
         }
     }
 }

@@ -8,7 +8,7 @@ struct HomeView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Text("0.0.2")
+                Text("0.0.3")
                     .font(Theme.mono)
                     .foregroundStyle(Theme.textMuted)
                     .padding(.horizontal, 10)

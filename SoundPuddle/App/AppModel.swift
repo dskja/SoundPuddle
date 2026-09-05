@@ -13,6 +13,7 @@ final class AppModel {
         case hostLive
         case joinBrowse
         case joinConnecting
+        case joinCalibrate
         case joinLive
     }
 
@@ -21,16 +22,18 @@ final class AppModel {
         case file(URL)
     }
 
-    // MARK: View-facing state
+    // MARK: View-facing state (Features contract)
     var route: Route = .home
     var sessionTitle = ""
-    var sessionMode: SessionMode = .party
+    var sessionMode: SessionMode = .schwarm
     var hostSource: HostSource = .microphone
     var discovered: [(peer: MeshPeer, ad: SessionAdvertisement)] = []
     var peers: [MeshPeer] = []
     var audioLevel: Float = 0
     var linkQuality: LinkQuality = .good
     var lastError: String?
+    var hostJoinAddress: String?
+    var manualJoinAddress: String = ""
     var isStreaming = false
     var showPermissionHint = false
     var displayName: String = UserDefaults.standard.string(forKey: "displayName") ?? UIDevice.current.name
@@ -62,10 +65,27 @@ final class AppModel {
     var diagnosticsLine: String {
         let lc = isLiveContainer ? "LC" : "native"
         let pause = isStreamPaused ? " · paused" : ""
-        return "\(lc) · peers \(peers.count)/7 · underrun \(underrunCount) · \(linkQuality.rawValue) · rtt \(rttLabel)\(pause)"
+        return "\(lc) · \(myRole.rawValue) · peers \(peers.count)/7 · underrun \(underrunCount) · \(linkQuality.rawValue) · rtt \(rttLabel)\(pause)"
     }
 
     var peerCapWarning: Bool { peers.count >= 6 }
+
+    // MARK: Schwarm
+    var fieldMap: FieldMap = .empty
+    var myRole: SpeakerRole = .mid
+    var calibrateProgress: Double = 0
+    var calibrateStatus = ""
+    var playlistTracks: [PlaylistTrack] = []
+    var currentTrackID: String?
+    var lightFlash: Double = 0
+    var lightshowEnabled = true
+    var deviceProfile = DeviceProfiler.profile()
+    var proximityReady = false
+    var dragProgress: CGFloat = 0
+
+    var roleLabel: String {
+        String(localized: String.LocalizationValue(myRole.titleKey))
+    }
 
     // MARK: Internals
     private let mesh: any MeshTransporting
@@ -73,11 +93,16 @@ final class AppModel {
     private let playback = AudioPlaybackEngine()
     private let sessionConfig = AudioSessionConfigurator()
     private let networkPrimer = LocalNetworkPrimer()
+    private let clock = ClockSync()
+    private let chirp = ChirpCalibrator()
+    private let lightshow = LightshowController()
+    private let playlist = PlaylistEngine()
     private var eventTask: Task<Void, Never>?
     private var joinTimeoutTask: Task<Void, Never>?
     private var qualityRecoveryTask: Task<Void, Never>?
     private var pingTask: Task<Void, Never>?
     private var tickTask: Task<Void, Never>?
+    private var clockSyncTask: Task<Void, Never>?
     private var underrunCount = 0
     private var activeAdvertisement: SessionAdvertisement?
     private var sessionActive = false
@@ -85,9 +110,14 @@ final class AppModel {
     private var welcomedPeerIDs = Set<String>()
     private var pendingPingT: Int64?
     private var interruptionObserver: NSObjectProtocol?
+    private var chirpDistances: [String: Double] = [:]
+    private var chirpRound = 0
+    private var hostPlayEpochMs: Int64?
+    private var lastLightCueMs: Int64 = 0
+    private var localPeerKey: String { "local:\(displayName)" }
 
     init(mesh: (any MeshTransporting)? = nil) {
-        self.mesh = mesh ?? MultipeerMeshTransport()
+        self.mesh = mesh ?? MeshTransportFactory.make()
         capture.onFrame = { [weak self] packet in
             Task { @MainActor in
                 guard let self, self.isStreaming, !self.isStreamPaused else { return }
@@ -95,10 +125,25 @@ final class AppModel {
             }
         }
         capture.onLevel = { [weak self] level in
-            Task { @MainActor in self?.audioLevel = level }
+            Task { @MainActor in
+                guard let self else { return }
+                self.audioLevel = level
+                if self.route == .hostLive {
+                    self.lightshow.ingestLevel(level)
+                    self.lightFlash = self.lightshow.screenFlash
+                    self.maybeBroadcastLightCue(level: level)
+                }
+            }
         }
         playback.onLevel = { [weak self] level in
-            Task { @MainActor in self?.audioLevel = level }
+            Task { @MainActor in
+                guard let self else { return }
+                self.audioLevel = level
+                if self.route == .joinLive {
+                    self.lightshow.ingestLevel(level)
+                    self.lightFlash = self.lightshow.screenFlash
+                }
+            }
         }
         playback.onUnderrun = { [weak self] in
             Task { @MainActor in
@@ -119,6 +164,7 @@ final class AppModel {
     func openHost() {
         showPermissionHint = true
         lastError = nil
+        sessionMode = .schwarm
         networkPrimer.prime()
         route = .hostSetup
     }
@@ -126,6 +172,8 @@ final class AppModel {
     func openJoin() {
         showPermissionHint = true
         lastError = nil
+        proximityReady = false
+        dragProgress = 0
         networkPrimer.prime()
         route = .joinBrowse
         startBrowsing()
@@ -150,6 +198,12 @@ final class AppModel {
             let local = try ImportedAudioStore.ingest(url)
             ImportedAudioStore.purgeOld()
             hostSource = .file(local)
+            let title = local.deletingPathExtension().lastPathComponent
+            playlist.replace(with: [PlaylistTrack(title: title, path: local.path)], current: nil)
+            syncPlaylistUI()
+            if sessionTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                sessionTitle = String(title.prefix(SessionAdvertisement.maxTitleLength))
+            }
             lastError = nil
             Haptics.light()
         } catch {
@@ -158,17 +212,28 @@ final class AppModel {
         }
     }
 
+    func setDragProgress(_ value: CGFloat) {
+        dragProgress = min(1, max(0, value))
+        if dragProgress > 0.92 { proximityReady = true }
+    }
+
     // MARK: Host
 
     func startHosting() {
         let trimmed = sessionTitle.trimmingCharacters(in: .whitespacesAndNewlines)
         let title = trimmed.isEmpty ? String(localized: "host.defaultTitle") : trimmed
         sessionTitle = title
+        sessionMode = .schwarm
         let ad = SessionAdvertisement(title: title, mode: sessionMode)
         activeAdvertisement = ad
+        myRole = .mid
+        playback.speakerRole = .mid
 
         Task {
             do {
+                // LiveContainer: force Local Network permission BEFORE Multipeer advertise,
+                // otherwise Bonjour fails with NSNetServicesErrorDomain -72008.
+                await networkPrimer.primeAndWait()
                 if case .microphone = hostSource {
                     try await requestMicrophonePermission()
                 }
@@ -181,16 +246,23 @@ final class AppModel {
                     try capture.start(source: .microphone)
                 case .file(let url):
                     try capture.start(source: .file(url))
+                    if playlist.tracks.isEmpty {
+                        playlist.add(PlaylistTrack(title: url.deletingPathExtension().lastPathComponent, path: url.path))
+                        syncPlaylistUI()
+                    }
                 }
-                isStreaming = true
-                isStreamPaused = false
+                capture.setPaused(true)
+                isStreaming = false
+                isStreamPaused = true
                 sessionActive = true
                 sessionStartedAt = Date()
                 holdIdleTimer(true)
-                sendStreamStart()
+                rebalanceField()
+                broadcastPlaylist()
                 startPingLoop()
                 startElapsedTick()
                 route = .hostLive
+                refreshHostJoinAddress()
                 Haptics.success()
             } catch {
                 lastError = error.localizedDescription
@@ -198,6 +270,14 @@ final class AppModel {
                 route = .hostSetup
                 Haptics.warning()
             }
+        }
+    }
+
+    func startSchwarm() {
+        guard route == .hostLive else { return }
+        Task {
+            await runHostCalibration()
+            beginHostStreamScheduled()
         }
     }
 
@@ -229,11 +309,96 @@ final class AppModel {
         Haptics.light()
     }
 
+    func toggleLightshow() {
+        lightshowEnabled.toggle()
+        lightshow.enabled = lightshowEnabled
+        if !lightshowEnabled {
+            lightshow.stop()
+            lightFlash = 0
+        }
+        Haptics.light()
+    }
+
+    func hostVote(trackID: String) {
+        playlist.vote(trackID: trackID, from: localPeerKey)
+        syncPlaylistUI()
+        broadcastPlaylist()
+    }
+
+    func advancePlaylist() {
+        guard route == .hostLive else { return }
+        guard let next = playlist.advanceToWinner() else { return }
+        syncPlaylistUI()
+        broadcastPlaylist()
+        if let path = next.path {
+            let url = URL(fileURLWithPath: path)
+            hostSource = .file(url)
+            do {
+                capture.stop()
+                try capture.start(source: .file(url))
+                capture.monitorMuted = hostMonitorMuted
+                isStreaming = true
+                isStreamPaused = false
+                let startAt = ClockSync.nowMs() + 800
+                mesh.sendControl(.playSchedule(.init(trackId: next.id, startHostMs: startAt)), to: nil)
+                sendStreamStart()
+            } catch {
+                lastError = error.localizedDescription
+            }
+        }
+        Haptics.success()
+    }
+
     // MARK: Join
+
+
+    func joinWithManualAddress() {
+        let code = manualJoinAddress.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !code.isEmpty else {
+            lastError = String(localized: "error.joinCodeInvalid")
+            Haptics.warning()
+            return
+        }
+        lastError = nil
+        discovered = []
+        mesh.stopBrowsing()
+        route = .joinConnecting
+        mesh.connect(toAddress: code)
+        joinTimeoutTask?.cancel()
+        joinTimeoutTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 20_000_000_000)
+            guard let self, !Task.isCancelled else { return }
+            if self.route == .joinConnecting || self.route == .joinCalibrate {
+                self.lastError = AppError.timeout.errorDescription
+                self.teardownAll()
+                self.route = .joinBrowse
+                self.startBrowsing()
+                Haptics.warning()
+            }
+        }
+    }
+
+    private func refreshHostJoinAddress() {
+        hostJoinAddress = mesh.publishedJoinAddress
+        guard hostJoinAddress == nil else { return }
+        Task { [weak self] in
+            for _ in 0..<24 {
+                try? await Task.sleep(nanoseconds: 250_000_000)
+                guard let self else { return }
+                if let address = self.mesh.publishedJoinAddress {
+                    self.hostJoinAddress = address
+                    return
+                }
+            }
+        }
+    }
 
     func startBrowsing() {
         discovered = []
-        mesh.startBrowsing()
+        Task {
+            await networkPrimer.primeAndWait()
+            mesh.startBrowsing()
+        }
     }
 
     func join(peer: MeshPeer, advertisement: SessionAdvertisement) {
@@ -243,15 +408,14 @@ final class AppModel {
         }
         lastError = nil
         sessionTitle = advertisement.title
-        sessionMode = advertisement.mode
+        sessionMode = advertisement.mode.isSchwarm ? .schwarm : advertisement.mode
         route = .joinConnecting
         mesh.invite(peer)
-        // Timeout stays until joinLive — not cancelled on mere .connected
         joinTimeoutTask?.cancel()
         joinTimeoutTask = Task { [weak self] in
-            try? await Task.sleep(nanoseconds: 15_000_000_000)
+            try? await Task.sleep(nanoseconds: 20_000_000_000)
             guard let self, !Task.isCancelled else { return }
-            if self.route == .joinConnecting {
+            if self.route == .joinConnecting || self.route == .joinCalibrate {
                 self.lastError = AppError.timeout.errorDescription
                 self.teardownAll()
                 self.route = .joinBrowse
@@ -276,6 +440,13 @@ final class AppModel {
     func setJoinVolume(_ value: Float) {
         joinVolume = max(0, min(1, value))
         applyJoinVolume()
+    }
+
+    func castVote(trackID: String) {
+        playlist.vote(trackID: trackID, from: localPeerKey)
+        syncPlaylistUI()
+        mesh.sendControl(.vote(.init(trackId: trackID, peerId: localPeerKey)), to: nil)
+        Haptics.light()
     }
 
     func handleScenePhase(_ phase: ScenePhase) {
@@ -306,13 +477,13 @@ final class AppModel {
     private func handle(_ event: MeshEvent) {
         switch event {
         case .peerDiscovered(let peer, let ad):
-            if let ad {
-                discovered.removeAll { $0.peer.id == peer.id }
-                discovered.append((peer, ad))
-            }
+            let resolved = ad ?? SessionAdvertisement(title: peer.displayName, mode: .schwarm)
+            discovered.removeAll { $0.peer.id == peer.id }
+            discovered.append((peer, resolved))
         case .peerLost(let id):
-            discovered.removeAll { $0.peer.id == id }
-            peers.removeAll { $0.id == id }
+            discovered.removeAll { $0.peer.id == id || $0.peer.displayName == id }
+            peers.removeAll { $0.id == id || $0.displayName == id }
+            if route == .hostLive { rebalanceField() }
         case .peerStateChanged:
             peers = mesh.connectedPeers
         case .connected(let peer):
@@ -320,17 +491,22 @@ final class AppModel {
             if route == .joinConnecting {
                 mesh.sendControl(
                     .hello(.init(
-                        app: "0.0.2",
+                        app: "0.0.3",
                         peer: displayName,
-                        fmtPref: AudioFormatSpec.canonical.token
+                        fmtPref: AudioFormatSpec.canonical.token,
+                        deviceModel: deviceProfile.model,
+                        speakerQuality: deviceProfile.speakerQuality
                     )),
                     to: [peer]
                 )
+                startClockSyncLoop(isHost: false)
             } else if route == .hostLive {
                 if !welcomedPeerIDs.contains(peer.id) {
                     welcomedPeerIDs.insert(peer.id)
                     sendWelcome(to: peer)
                     broadcastRoster()
+                    rebalanceField()
+                    broadcastPlaylist()
                     if isStreaming && !isStreamPaused {
                         sendStreamStart(to: [peer])
                     }
@@ -339,7 +515,7 @@ final class AppModel {
             }
         case .disconnected:
             peers = mesh.connectedPeers
-            if route == .joinLive || route == .joinConnecting {
+            if route == .joinLive || route == .joinConnecting || route == .joinCalibrate {
                 lastError = AppError.hostGone.errorDescription
                 teardownAll()
                 route = .joinBrowse
@@ -348,15 +524,16 @@ final class AppModel {
             } else if route == .hostLive {
                 welcomedPeerIDs = Set(peers.map(\.id))
                 broadcastRoster()
+                rebalanceField()
             }
         case .control(let message, let from):
             handleControl(message, from: from)
         case .audio(let packet, _):
-            if route == .joinLive && !isMuted {
+            if (route == .joinLive || route == .joinCalibrate) && !isMuted {
                 playback.enqueue(packet: packet)
             }
         case .error(let error):
-            lastError = error.errorDescription
+            lastError = Self.friendlyErrorMessage(error)
         }
     }
 
@@ -369,6 +546,8 @@ final class AppModel {
                 welcomedPeerIDs.insert(peer.id)
                 sendWelcome(to: peer)
                 broadcastRoster()
+                rebalanceField()
+                broadcastPlaylist()
                 if isStreaming && !isStreamPaused {
                     sendStreamStart(to: [peer])
                 }
@@ -376,8 +555,10 @@ final class AppModel {
         case .welcome(let payload):
             sessionTitle = payload.title
             if let mode = SessionMode(rawValue: payload.mode) {
-                sessionMode = mode
+                sessionMode = mode.isSchwarm ? .schwarm : mode
             }
+            enterJoinCalibrate()
+            startClockSyncLoop(isHost: false)
         case .streamStart:
             beginJoinPlayback()
         case .streamStop(let reason):
@@ -391,7 +572,7 @@ final class AppModel {
             startBrowsing()
             Haptics.warning()
         case .goodbye:
-            if route == .joinLive || route == .joinConnecting {
+            if route == .joinLive || route == .joinConnecting || route == .joinCalibrate {
                 lastError = AppError.hostGone.errorDescription
                 teardownAll()
                 route = .joinBrowse
@@ -419,6 +600,65 @@ final class AppModel {
             }
         case .peerRoster(let roster):
             rosterNames = roster.map(\.name)
+        case .clockSync(let payload):
+            handleClockSync(payload, from: from)
+        case .chirpSchedule(let payload):
+            handleChirpSchedule(payload)
+        case .chirpReport(let payload):
+            if route == .hostLive {
+                let delta = Double(payload.detectAtLocalMs - (hostPlayEpochMs ?? payload.detectAtLocalMs))
+                chirpDistances[payload.peerId] = ChirpCalibrator.distanceMeters(deltaMs: abs(delta) > 80 ? 12 : 6)
+                rebalanceField()
+            }
+        case .fieldMap(let payload):
+            applyFieldMap(payload)
+        case .roleAssign(let payload):
+            if payload.peerId == localPeerKey || payload.peerId == displayName {
+                myRole = SpeakerRole(rawValue: payload.role) ?? .mid
+                playback.speakerRole = myRole
+            }
+        case .playlist(let payload):
+            let tracks = payload.tracks.map {
+                PlaylistTrack(id: $0.id, title: $0.title, path: nil, votes: $0.votes)
+            }
+            playlist.replace(with: tracks, current: payload.currentId)
+            syncPlaylistUI()
+        case .vote(let payload):
+            if route == .hostLive {
+                playlist.vote(trackID: payload.trackId, from: payload.peerId)
+                syncPlaylistUI()
+                broadcastPlaylist()
+            }
+        case .lightCue(let payload):
+            let localAt = clock.localFromHostMs(payload.atHostMs)
+            let delay = Double(localAt - ClockSync.nowMs()) / 1000.0
+            let apply = { [weak self] in
+                self?.lightshow.applyCue(intensity: payload.intensity, colorHue: payload.hue)
+                self?.lightFlash = self?.lightshow.screenFlash ?? 0
+            }
+            if delay > 0.02 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: apply)
+            } else {
+                apply()
+            }
+        case .playSchedule(let payload):
+            hostPlayEpochMs = payload.startHostMs
+            let localAt = clock.localFromHostMs(payload.startHostMs)
+            let delay = Double(localAt - ClockSync.nowMs()) / 1000.0
+            if delay > 0 {
+                calibrateStatus = String(localized: "calibrate.armed")
+                Task {
+                    try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                    beginJoinPlayback()
+                }
+            } else {
+                beginJoinPlayback()
+            }
+        case .calibrateDone:
+            if route == .joinCalibrate {
+                calibrateProgress = 1
+                calibrateStatus = String(localized: "calibrate.done")
+            }
         }
     }
 
@@ -430,7 +670,7 @@ final class AppModel {
                 fmt: ad.formatToken,
                 mode: ad.mode.rawValue,
                 title: ad.title,
-                serverTimeMs: Int64(Date().timeIntervalSince1970 * 1000)
+                serverTimeMs: ClockSync.nowMs()
             )),
             to: [peer]
         )
@@ -456,10 +696,15 @@ final class AppModel {
     }
 
     private func beginJoinPlayback() {
-        guard route != .joinLive else { return }
+        guard route != .joinLive else {
+            isStreaming = true
+            isStreamPaused = false
+            return
+        }
         do {
             try sessionConfig.configure(for: sessionMode, role: .join)
             try playback.prepare(targetFrames: sessionMode.jitterTargetFrames)
+            playback.speakerRole = myRole
             applyJoinVolume()
             isStreaming = true
             isStreamPaused = false
@@ -471,6 +716,7 @@ final class AppModel {
             mesh.stopBrowsing()
             joinTimeoutTask?.cancel()
             joinTimeoutTask = nil
+            chirp.stop()
             startPingLoop()
             startElapsedTick()
             route = .joinLive
@@ -508,6 +754,7 @@ final class AppModel {
             while !Task.isCancelled {
                 try? await Task.sleep(nanoseconds: 1_000_000_000)
                 guard let self, !Task.isCancelled else { return }
+                self.lightFlash = self.lightshow.screenFlash
                 self.audioLevel = self.audioLevel
             }
         }
@@ -582,6 +829,7 @@ final class AppModel {
                 } else if route == .joinLive {
                     try sessionConfig.configure(for: sessionMode, role: .join)
                     try playback.prepare(targetFrames: sessionMode.jitterTargetFrames)
+                    playback.speakerRole = myRole
                     applyJoinVolume()
                     isStreaming = true
                 }
@@ -605,6 +853,7 @@ final class AppModel {
     }
 
     private func teardownAll() {
+        hostJoinAddress = nil
         joinTimeoutTask?.cancel()
         joinTimeoutTask = nil
         pingTask?.cancel()
@@ -613,8 +862,13 @@ final class AppModel {
         qualityRecoveryTask = nil
         tickTask?.cancel()
         tickTask = nil
+        clockSyncTask?.cancel()
+        clockSyncTask = nil
         capture.stop()
         playback.stop()
+        chirp.stop()
+        lightshow.stop()
+        clock.reset()
         mesh.disconnect()
         sessionConfig.deactivate()
         holdIdleTimer(false)
@@ -633,5 +887,230 @@ final class AppModel {
         pendingPingT = nil
         lastRTT = nil
         sessionStartedAt = nil
+        fieldMap = .empty
+        myRole = .mid
+        playback.speakerRole = .mid
+        calibrateProgress = 0
+        calibrateStatus = ""
+        chirpDistances.removeAll()
+        lightFlash = 0
+        dragProgress = 0
+        proximityReady = false
+        hostPlayEpochMs = nil
+        playlistTracks = []
+        currentTrackID = nil
+    }
+
+
+    private static func friendlyErrorMessage(_ error: AppError) -> String? {
+        let raw = error.errorDescription ?? ""
+        let nsHints = ["NSNetServicesErrorDomain", "-72008", "Bonjour"]
+        if nsHints.contains(where: { raw.contains($0) }) {
+            if LiveContainerRuntime.isActive {
+                return String(localized: "error.bonjour.livecontainer")
+            }
+            return String(localized: "error.bonjour.localNetwork")
+        }
+        return error.errorDescription
+    }
+
+    // MARK: Schwarm helpers
+
+    private func enterJoinCalibrate() {
+        route = .joinCalibrate
+        calibrateProgress = 0.1
+        calibrateStatus = String(localized: "calibrate.syncing")
+        Haptics.light()
+    }
+
+    private func runHostCalibration() async {
+        chirpRound += 1
+        let playAt = ClockSync.nowMs() + 600
+        hostPlayEpochMs = playAt
+        mesh.sendControl(
+            .chirpSchedule(.init(
+                hostPlayAtMs: playAt,
+                frequencyHz: 18_500,
+                durationMs: 90,
+                round: chirpRound
+            )),
+            to: nil
+        )
+        do {
+            try chirp.prepare(frequencyHz: 18_500)
+            chirp.playChirp(durationMs: 90, atHostMs: playAt, clock: clock)
+        } catch {
+            lastError = error.localizedDescription
+        }
+        try? await Task.sleep(nanoseconds: 1_400_000_000)
+        rebalanceField()
+        for peer in peers {
+            mesh.sendControl(.calibrateDone(.init(peerId: peer.id, ok: true)), to: [peer])
+        }
+        chirp.stop()
+    }
+
+    private func beginHostStreamScheduled() {
+        let startAt = ClockSync.nowMs() + 700
+        hostPlayEpochMs = startAt
+        if let current = playlist.current {
+            mesh.sendControl(.playSchedule(.init(trackId: current.id, startHostMs: startAt)), to: nil)
+        }
+        Task {
+            try? await Task.sleep(nanoseconds: 700_000_000)
+            capture.setPaused(false)
+            isStreamPaused = false
+            isStreaming = true
+            sendStreamStart()
+            Haptics.success()
+        }
+    }
+
+    private func rebalanceField() {
+        let peerTuples = mesh.connectedPeers.map { (id: $0.id, name: $0.displayName) }
+        fieldMap = FieldBalancer.rebalance(
+            peers: peerTuples,
+            hostID: localPeerKey,
+            hostName: displayName,
+            distances: chirpDistances,
+            previous: fieldMap
+        )
+        broadcastFieldMap()
+        if let mine = fieldMap.seats.first(where: { $0.id == localPeerKey }) {
+            myRole = mine.role
+            playback.speakerRole = myRole
+        }
+    }
+
+    private func broadcastFieldMap() {
+        let payload = ControlMessage.FieldMapPayload(
+            version: fieldMap.version,
+            seats: fieldMap.seats.map {
+                .init(id: $0.id, name: $0.name, role: $0.role.rawValue, angleDeg: $0.angleDeg, distanceM: $0.distanceM)
+            }
+        )
+        mesh.sendControl(.fieldMap(payload), to: nil)
+        for seat in fieldMap.seats where seat.id != localPeerKey {
+            if let peer = peers.first(where: { $0.id == seat.id || $0.displayName == seat.name }) {
+                mesh.sendControl(
+                    .roleAssign(.init(
+                        peerId: seat.id,
+                        role: seat.role.rawValue,
+                        angleDeg: seat.angleDeg,
+                        distanceM: seat.distanceM
+                    )),
+                    to: [peer]
+                )
+            }
+        }
+    }
+
+    private func applyFieldMap(_ payload: ControlMessage.FieldMapPayload) {
+        fieldMap = FieldMap(
+            seats: payload.seats.map {
+                FieldSeat(
+                    id: $0.id,
+                    name: $0.name,
+                    role: SpeakerRole(rawValue: $0.role) ?? .mid,
+                    angleDeg: $0.angleDeg,
+                    distanceM: $0.distanceM
+                )
+            },
+            version: payload.version
+        )
+        if let mine = fieldMap.seats.first(where: { $0.id == localPeerKey || $0.name == displayName }) {
+            myRole = mine.role
+            playback.speakerRole = myRole
+        }
+        rosterNames = fieldMap.seats.map(\.name)
+        calibrateProgress = max(calibrateProgress, 0.9)
+        calibrateStatus = String(localized: "calibrate.placed")
+    }
+
+    private func handleClockSync(_ payload: ControlMessage.ClockSyncPayload, from: String) {
+        if route == .hostLive {
+            let t1 = ClockSync.nowMs()
+            let t2 = ClockSync.nowMs()
+            let reply = ControlMessage.clockSync(.init(t0: payload.t0, t1: t1, t2: t2))
+            if let peer = peers.first(where: { $0.displayName == from || $0.id == from }) {
+                mesh.sendControl(reply, to: [peer])
+            } else {
+                mesh.sendControl(reply, to: nil)
+            }
+        } else if let t1 = payload.t1, let t2 = payload.t2 {
+            let t3 = ClockSync.nowMs()
+            clock.recordSample(t0: payload.t0, t1: t1, t2: t2, t3: t3)
+            lastRTT = Int(clock.lastRTTMs)
+        }
+    }
+
+    private func handleChirpSchedule(_ payload: ControlMessage.ChirpSchedulePayload) {
+        calibrateStatus = String(localized: "calibrate.listening")
+        calibrateProgress = 0.45
+        do {
+            try chirp.prepare(frequencyHz: payload.frequencyHz)
+            chirp.armDetection { [weak self] detectMs in
+                guard let self else { return }
+                self.mesh.sendControl(
+                    .chirpReport(.init(
+                        detectAtLocalMs: detectMs,
+                        round: payload.round,
+                        peerId: self.localPeerKey
+                    )),
+                    to: nil
+                )
+                self.calibrateProgress = 0.8
+            }
+            chirp.playChirp(
+                durationMs: payload.durationMs,
+                atHostMs: payload.hostPlayAtMs,
+                clock: clock
+            )
+        } catch {
+            calibrateStatus = error.localizedDescription
+        }
+    }
+
+    private func broadcastPlaylist() {
+        let snap = playlist.snapshotPayload()
+        mesh.sendControl(
+            .playlist(.init(
+                currentId: snap.currentID,
+                tracks: snap.tracks.map { .init(id: $0.id, title: $0.title, votes: $0.votes) }
+            )),
+            to: nil
+        )
+    }
+
+    private func syncPlaylistUI() {
+        playlistTracks = playlist.ranked
+        currentTrackID = playlist.currentID
+    }
+
+    private func maybeBroadcastLightCue(level: Float) {
+        guard lightshowEnabled, level > 0.35 else { return }
+        let now = ClockSync.nowMs()
+        guard now - lastLightCueMs > 320 else { return }
+        lastLightCueMs = now
+        mesh.sendControl(
+            .lightCue(.init(atHostMs: now + 40, intensity: min(1, level * 1.4), hue: Float(lightshow.beatPhase))),
+            to: nil
+        )
+    }
+
+    private func startClockSyncLoop(isHost: Bool) {
+        clockSyncTask?.cancel()
+        guard !isHost else { return }
+        clockSyncTask = Task { [weak self] in
+            while !Task.isCancelled {
+                guard let self else { return }
+                let t0 = ClockSync.nowMs()
+                self.mesh.sendControl(.clockSync(.init(t0: t0, t1: nil, t2: nil)), to: nil)
+                try? await Task.sleep(nanoseconds: 2_500_000_000)
+                if self.route != .joinCalibrate && self.route != .joinLive && self.route != .joinConnecting {
+                    return
+                }
+            }
+        }
     }
 }

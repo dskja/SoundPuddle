@@ -1,0 +1,85 @@
+name: Assemble large Schwarm sources
+on:
+  push:
+    paths:
+      - 'SoundPuddle/App/.assemble/**'
+      - 'SoundPuddle/Resources/.assemble/**'
+      - '.github/workflows/assemble-schwarm-sources.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - name: Assemble AppModel.swift and Localizable.xcstrings
+        run: |
+          set -euo pipefail
+          python3 << 'PY'
+          from pathlib import Path
+          import base64
+          import json
+
+          def assemble(parts_dir: Path, dest: Path, validate):
+              parts = sorted(parts_dir.glob('*.b64'))
+              if not parts:
+                  print(f'skip missing {parts_dir}')
+                  return False
+              raw = ''.join(p.read_text().strip() for p in parts)
+              if len(raw) % 4:
+                  raise SystemExit(
+                      f'invalid base64 length {len(raw)} in {parts_dir} '
+                      f'(incomplete chunk upload?)'
+                  )
+              data = base64.b64decode(raw, validate=True)
+              validate(data, dest)
+              dest.write_bytes(data)
+              print(f'wrote {dest} ({len(data)} bytes) from {len(parts)} parts')
+              return True
+
+          def validate_swift(data: bytes, dest: Path):
+              text = data.decode('utf-8')
+              if 'final class AppModel' not in text:
+                  raise SystemExit(f'{dest}: assembled Swift missing AppModel')
+              if text.count('{') != text.count('}'):
+                  raise SystemExit(f'{dest}: unbalanced braces')
+
+          def validate_xcstrings(data: bytes, dest: Path):
+              obj = json.loads(data.decode('utf-8'))
+              if 'strings' not in obj:
+                  raise SystemExit(f'{dest}: not an xcstrings catalog')
+
+          root = Path('.')
+          changed = False
+          changed |= assemble(
+              root / 'SoundPuddle/App/.assemble',
+              root / 'SoundPuddle/App/AppModel.swift',
+              validate_swift,
+          )
+          changed |= assemble(
+              root / 'SoundPuddle/Resources/.assemble',
+              root / 'SoundPuddle/Resources/Localizable.xcstrings',
+              validate_xcstrings,
+          )
+          Path('/tmp/assemble_changed').write_text('1' if changed else '0')
+          PY
+      - name: Commit assembled files
+        run: |
+          if [[ "$(cat /tmp/assemble_changed)" != "1" ]]; then
+            echo 'nothing to assemble'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add SoundPuddle/App/AppModel.swift SoundPuddle/Resources/Localizable.xcstrings || true
+          if git diff --cached --quiet; then
+            echo 'no content change'
+            exit 0
+          fi
+          git commit -m 'feat: Schwarm 0.0.3 — AppModel + Localizable (assembled)'
+          git push
