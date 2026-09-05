@@ -181,6 +181,23 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+      - name: Fast-forward main
+        if: steps.build.outcome == 'success' && github.ref == 'refs/heads/dskjasoundpuddle-61ba'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          HTTP=$(curl -sS -o /tmp/ff.json -w "%{http_code}" -X PATCH \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/heads/main" \
+            -d "{\"sha\":\"${GITHUB_SHA}\",\"force\":false}")
+          cat /tmp/ff.json
+          echo
+          test "$HTTP" = "200"
+          echo "main fast-forwarded to ${GITHUB_SHA}"
+
       - name: Upload build log
         if: always()
         uses: actions/upload-artifact@v4
