@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - dskja**
+      - dskja*
   workflow_dispatch:
 
 concurrency:
@@ -30,7 +30,6 @@ jobs:
           xcodebuild -version | tee xcode-version.txt
           xcrun --sdk iphoneos --show-sdk-version | tee ios-sdk-version.txt
 
-
       - name: Fetch OFL fonts
         run: |
           set -euo pipefail
@@ -41,6 +40,38 @@ jobs:
           curl -fsSL "https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-mono@latest/latin-400-normal.ttf" -o SoundPuddle/Fonts/IBMPlexMono-Regular.ttf
           ls -la SoundPuddle/Fonts
 
+      - name: Generate App Icon
+        run: |
+          set -euo pipefail
+          python3 << 'PY'
+          import struct, zlib
+          from pathlib import Path
+          W = H = 1024
+          def chunk(tag, data):
+              return struct.pack(">I", len(data)) + tag + data + struct.pack(">I", zlib.crc32(tag + data) & 0xffffffff)
+          ink, lime = (7, 15, 18), (182, 245, 74)
+          rows = []
+          cx = cy = W / 2
+          r = 280
+          for y in range(H):
+              row = bytearray([0])
+              for x in range(W):
+                  dx, dy = x - cx, y - cy
+                  d = (dx * dx + dy * dy) ** 0.5
+                  if d <= r:
+                      t = max(0, min(1, (r - d) / 40))
+                      c = tuple(int(ink[i] * (1 - t) + lime[i] * t) for i in range(3))
+                  else:
+                      c = ink
+                  row.extend(c)
+              rows.append(bytes(row))
+          raw = b"".join(rows)
+          png = b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", W, H, 8, 2, 0, 0, 0)) + chunk(b"IDAT", zlib.compress(raw, 9)) + chunk(b"IEND", b"")
+          out = Path("SoundPuddle/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png")
+          out.write_bytes(png)
+          print("wrote", out, out.stat().st_size)
+          PY
+
       - name: Install XcodeGen
         run: brew install xcodegen
 
@@ -50,6 +81,7 @@ jobs:
       - name: Build Release iphoneos (unsigned)
         run: |
           set -euo pipefail
+          set -o pipefail
           xcodebuild \
             -project SoundPuddle.xcodeproj \
             -scheme SoundPuddle \
@@ -63,6 +95,8 @@ jobs:
             DEVELOPMENT_TEAM="" \
             CURRENT_PROJECT_VERSION=${{ github.run_number }} \
             clean build | tee build-unsigned.log
+          echo "## xcodebuild errors" >> "$GITHUB_STEP_SUMMARY"
+          (grep -nE "error:|fatal error:|BUILD FAILED" build-unsigned.log || true) | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Package unsigned IPA
         run: |
