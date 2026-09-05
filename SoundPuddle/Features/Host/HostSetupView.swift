@@ -13,7 +13,7 @@ struct HostSetupView: View {
                 .textFieldStyle(.plain)
                 .font(Theme.bodyMedium)
                 .padding(14)
-                .background(Theme.well.opacity(0.8))
+                .glassPanel(cornerRadius: 14)
                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                 .foregroundStyle(Theme.textPrimary)
 
