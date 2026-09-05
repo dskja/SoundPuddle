@@ -13,6 +13,9 @@ final class AudioPlaybackEngine {
 
     var onLevel: ((Float) -> Void)?
     var onUnderrun: (() -> Void)?
+    var outputVolume: Float = 1 {
+        didSet { engine.mainMixerNode.outputVolume = max(0, min(1, outputVolume)) }
+    }
 
     init(targetFrames: Int = 3) {
         jitter = JitterBuffer(targetFrames: targetFrames)
@@ -24,6 +27,7 @@ final class AudioPlaybackEngine {
         engine.attach(player)
         engine.connect(player, to: engine.mainMixerNode, format: format.avFormat)
         try engine.start()
+        engine.mainMixerNode.outputVolume = max(0, min(1, outputVolume))
         player.play()
         isRunning = true
         startPump()

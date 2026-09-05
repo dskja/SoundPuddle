@@ -19,6 +19,9 @@ final class AudioCaptureEngine: NSObject {
 
     var onFrame: ((Data) -> Void)?
     var onLevel: ((Float) -> Void)?
+    var monitorMuted: Bool = true {
+        didSet { applyMonitorVolume() }
+    }
     private(set) var source: Source = .microphone
 
     func start(source: Source) throws {
@@ -69,12 +72,14 @@ final class AudioCaptureEngine: NSObject {
         previewPlayer.play()
 
         // Read file in chunks on timer approximating realtime
-        let frameSamples = Int(AudioFormatSpec.canonical.samplesPerFrame)
-        let timer = Timer(timeInterval: AudioFormatSpec.canonical.frameDurationMs / 1000.0, repeats: true) { [weak self] _ in
+        applyMonitorVolume()
+        // Realtime pacing based on the *source* sample rate (not canonical*2).
+        let framesPerTick = max(1, Int((format.sampleRate * 0.020).rounded()))
+        let timer = Timer(timeInterval: 0.020, repeats: true) { [weak self] _ in
             guard let self, let file = self.file else { return }
-            guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: AVAudioFrameCount(frameSamples * 2)) else { return }
+            guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: AVAudioFrameCount(framesPerTick)) else { return }
             do {
-                try file.read(into: buffer, frameCount: AVAudioFrameCount(min(frameSamples * 2, Int(file.length - file.framePosition))))
+                try file.read(into: buffer, frameCount: AVAudioFrameCount(min(framesPerTick, Int(file.length - file.framePosition))))
                 if buffer.frameLength == 0 {
                     file.framePosition = 0
                     return
@@ -86,6 +91,24 @@ final class AudioCaptureEngine: NSObject {
         }
         RunLoop.main.add(timer, forMode: .common)
         displayLinkTimer = timer
+    }
+
+    private func applyMonitorVolume() {
+        previewPlayer.volume = monitorMuted ? 0 : 1
+    }
+
+    func setPaused(_ paused: Bool) {
+        if paused {
+            displayLinkTimer?.invalidate()
+            displayLinkTimer = nil
+            if case .file = source { previewPlayer.pause() }
+        } else if isRunning {
+            if case .file(let url) = source {
+                try? startFile(url)
+                previewPlayer.play()
+                applyMonitorVolume()
+            }
+        }
     }
 
     private func handleIncoming(_ buffer: AVAudioPCMBuffer) {

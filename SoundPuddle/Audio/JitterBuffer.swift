@@ -38,11 +38,12 @@ final class JitterBuffer: @unchecked Sendable {
         defer { lock.unlock() }
 
         if let expected = expectedSeq {
-            if seq &- expected > UInt32(maxLateFrames) && seq > expected {
-                // skip to live
+            let delta = Int32(bitPattern: seq &- expected)
+            if delta > Int32(maxLateFrames) {
+                // jumped ahead — skip to live
                 expectedSeq = seq
                 queue.removeAll(keepingCapacity: true)
-            } else if seq < expected {
+            } else if delta < 0 {
                 metrics.lateDrops += 1
                 return
             }

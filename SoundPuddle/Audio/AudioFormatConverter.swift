@@ -58,12 +58,21 @@ final class AudioFormatConverter {
         guard let floatChannels = buffer.floatChannelData else { return nil }
         let frameLength = Int(buffer.frameLength)
         let channelCount = Int(buffer.format.channelCount)
-        var data = Data(capacity: frameLength * channelCount * 2)
+        let outChannels = Int(target.channels)
+        var data = Data(capacity: frameLength * outChannels * 2)
         for frame in 0..<frameLength {
-            for ch in 0..<min(channelCount, Int(target.channels)) {
-                let clipped = max(-1.0, min(1.0, floatChannels[ch][frame]))
+            if outChannels == 1 && channelCount > 1 {
+                var sum: Float = 0
+                for ch in 0..<channelCount { sum += floatChannels[ch][frame] }
+                let clipped = max(-1.0, min(1.0, sum / Float(channelCount)))
                 var sample = Int16(clipped * Float(Int16.max))
                 withUnsafeBytes(of: &sample) { data.append(contentsOf: $0) }
+            } else {
+                for ch in 0..<min(channelCount, outChannels) {
+                    let clipped = max(-1.0, min(1.0, floatChannels[ch][frame]))
+                    var sample = Int16(clipped * Float(Int16.max))
+                    withUnsafeBytes(of: &sample) { data.append(contentsOf: $0) }
+                }
             }
         }
         return data

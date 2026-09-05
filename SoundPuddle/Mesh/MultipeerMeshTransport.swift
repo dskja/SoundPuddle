@@ -80,7 +80,7 @@ final class MultipeerMeshTransport: NSObject, MeshTransporting {
             emit(.error(.mesh(String(localized: "error.browserInactive"))))
             return
         }
-        guard let target = pendingPeers[peer.displayName] else {
+        guard let target = pendingPeers[peer.id] ?? pendingPeers[peer.displayName] else {
             emit(.error(.mesh(String(localized: "error.peerMissing"))))
             return
         }
@@ -122,8 +122,9 @@ final class MultipeerMeshTransport: NSObject, MeshTransporting {
 
     private func resolve(_ peers: [MeshPeer]?) -> [MCPeerID] {
         guard let peers else { return session.connectedPeers }
-        let names = Set(peers.map { $0.displayName })
-        return session.connectedPeers.filter { names.contains($0.displayName) }
+        let ids = Set(peers.map(\.id))
+        let names = Set(peers.map(\.displayName))
+        return session.connectedPeers.filter { ids.contains(String($0.hash)) || names.contains($0.displayName) }
     }
 
     private func emit(_ event: MeshEvent) {
@@ -132,7 +133,7 @@ final class MultipeerMeshTransport: NSObject, MeshTransporting {
 
     private func syncConnectedPeers() {
         connectedPeers = session.connectedPeers.map {
-            MeshPeer(id: $0.displayName, displayName: $0.displayName, state: .connected)
+            MeshPeer(id: String($0.hash), displayName: $0.displayName, state: .connected)
         }
     }
 }
@@ -147,7 +148,7 @@ extension MultipeerMeshTransport: MCSessionDelegate {
             case .notConnected: mapped = .notConnected
             @unknown default: mapped = .notConnected
             }
-            let peer = MeshPeer(id: peerID.displayName, displayName: peerID.displayName, state: mapped)
+            let peer = MeshPeer(id: String(peerID.hash), displayName: peerID.displayName, state: mapped)
             self.syncConnectedPeers()
             self.emit(.peerStateChanged(peer))
             switch state {
@@ -219,15 +220,17 @@ extension MultipeerMeshTransport: MCNearbyServiceAdvertiserDelegate {
 extension MultipeerMeshTransport: MCNearbyServiceBrowserDelegate {
     nonisolated func browser(_ browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID, withDiscoveryInfo info: [String: String]?) {
         Task { @MainActor in
+            self.pendingPeers[String(peerID.hash)] = peerID
             self.pendingPeers[peerID.displayName] = peerID
             let ad = SessionAdvertisement.from(discoveryInfo: info)
-            let peer = MeshPeer(id: peerID.displayName, displayName: peerID.displayName, state: .discovered)
+            let peer = MeshPeer(id: String(peerID.hash), displayName: peerID.displayName, state: .discovered)
             self.emit(.peerDiscovered(peer, ad))
         }
     }
 
     nonisolated func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID) {
         Task { @MainActor in
+            self.pendingPeers.removeValue(forKey: String(peerID.hash))
             self.pendingPeers.removeValue(forKey: peerID.displayName)
             self.emit(.peerLost(peerID.displayName))
         }
