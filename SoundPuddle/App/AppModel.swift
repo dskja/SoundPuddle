@@ -115,7 +115,7 @@ final class AppModel {
     private var localPeerKey: String { "local:\(displayName)" }
 
     init(mesh: (any MeshTransporting)? = nil) {
-        self.mesh = mesh ?? MultipeerMeshTransport()
+        self.mesh = mesh ?? MeshTransportFactory.make()
         capture.onFrame = { [weak self] packet in
             Task { @MainActor in
                 guard let self, self.isStreaming, !self.isStreamPaused else { return }

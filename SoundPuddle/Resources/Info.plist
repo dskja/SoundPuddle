@@ -41,6 +41,7 @@
 	<array>
 		<string>_soundpuddle._tcp</string>
 		<string>_soundpuddle._udp</string>
+		<string>_mqtt._tcp</string>
 	</array>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>Bluetooth hilft, Sessions aufzubauen, wenn kein gemeinsames WLAN verfügbar ist.</string>

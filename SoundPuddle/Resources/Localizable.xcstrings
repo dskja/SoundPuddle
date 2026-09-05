@@ -678,13 +678,13 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Berechtigungen (Lokales Netzwerk, Mikrofon, Bluetooth) gehören zur LiveContainer-Host-App. Dateiauswahl: „Fix File Picker“ aktivieren. Für stabiles Audio Multitask-Modus vermeiden."
+            "value": "Rechte gehören zur LiveContainer-Host-App (Local Network kann an sein). Multipeer-Bonjour (_soundpuddle) ist dort trotzdem gesperrt — SoundPuddle nutzt LAN-Discovery. Gleiches WLAN, VPN aus, Session neu starten."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Permissions (Local Network, Mic, Bluetooth) belong to the LiveContainer host app. For files enable “Fix File Picker”. Avoid multitask mode for stable audio."
+            "value": "Permissions belong to the LiveContainer host app (Local Network can be on). Multipeer Bonjour (_soundpuddle) is still blocked there — SoundPuddle uses LAN discovery. Same Wi‑Fi, VPN off, restart the session."
           }
         }
       }
@@ -694,13 +694,13 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "In LiveContainer: Lokales Netz & Mikrofon in den LiveContainer-Einstellungen erlauben. Soft-Encryption ist aktiv."
+            "value": "LiveContainer: Local Network kann an sein — Multipeer bleibt gesperrt. SoundPuddle hostet per LAN-Discovery."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "In LiveContainer: allow Local Network & Microphone in LiveContainer settings. Soft encryption is active."
+            "value": "LiveContainer: Local Network can be on — Multipeer stays blocked. SoundPuddle hosts via LAN discovery."
           }
         }
       }
@@ -710,13 +710,13 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "In LiveContainer: Lokales Netz in den LiveContainer-Einstellungen erlauben, dann erneut suchen."
+            "value": "LiveContainer: Local Network kann an sein — Multipeer bleibt gesperrt. SoundPuddle sucht per LAN-Discovery."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "In LiveContainer: allow Local Network in LiveContainer settings, then search again."
+            "value": "LiveContainer: Local Network can be on — Multipeer stays blocked. SoundPuddle browses via LAN discovery."
           }
         }
       }
@@ -1334,13 +1334,13 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Lokales Netzwerk blockiert (LiveContainer). In der LiveContainer-Host-App Local Network, Mikrofon und Bluetooth erlauben — nicht nur in SoundPuddle. Danach Session neu starten."
+            "value": "LiveContainer blockiert Multipeer-Bonjour (_soundpuddle), auch wenn Local Network an ist. SoundPuddle wechselt auf LAN-Discovery — Session neu starten. Host und Gäste brauchen dasselbe WLAN."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Local network blocked (LiveContainer). Allow Local Network, Microphone, and Bluetooth in the LiveContainer host app — not only in SoundPuddle. Then restart the session."
+            "value": "LiveContainer blocks Multipeer Bonjour (_soundpuddle) even with Local Network on. SoundPuddle switches to LAN discovery — restart the session. Host and guests need the same Wi‑Fi."
           }
         }
       }
@@ -1437,6 +1437,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Far right"
+          }
+        }
+      }
+    },
+    "error.bonjour.livecontainer.fallback": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LAN-Discovery in LiveContainer fehlgeschlagen. Prüfe: gleiches WLAN, Local Network für LiveContainer an, VPN/Privat-Relay aus, dann Session neu starten."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LAN discovery in LiveContainer failed. Check: same Wi‑Fi, Local Network enabled for LiveContainer, VPN/Private Relay off, then restart the session."
           }
         }
       }

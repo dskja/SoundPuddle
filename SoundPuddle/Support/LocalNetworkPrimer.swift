@@ -1,8 +1,9 @@
 import Foundation
 import Network
 
-/// Triggers the Local Network permission prompt and warms Bonjour — required in LiveContainer
-/// before MultipeerConnectivity advertising/browsing, otherwise NSNetServicesErrorDomain -72008.
+/// Triggers the Local Network permission prompt and warms Bonjour.
+/// In LiveContainer the host allowlist does not include `_soundpuddle._tcp`, so we warm
+/// with `_mqtt._tcp` (allowlisted) to avoid NSNetServicesErrorDomain -72008 during priming.
 @MainActor
 final class LocalNetworkPrimer {
     private var browser: NWBrowser?
@@ -10,12 +11,14 @@ final class LocalNetworkPrimer {
     private var continuation: CheckedContinuation<Void, Never>?
     private var finished = false
 
-    /// Best-effort fire-and-forget warm-up (app launch / navigation).
+    private var bonjourType: String {
+        LiveContainerRuntime.isActive ? LANBonjourMeshTransport.bonjourType : "_soundpuddle._tcp"
+    }
+
     func prime() {
         Task { await primeAndWait(timeoutSeconds: 1.2) }
     }
 
-    /// Awaitable warm-up used right before host/join mesh start.
     func primeAndWait(timeoutSeconds: TimeInterval = 2.5) async {
         cancel()
         finished = false
@@ -25,12 +28,9 @@ final class LocalNetworkPrimer {
 
             let params = NWParameters.udp
             params.includePeerToPeer = true
+            let type = self.bonjourType
 
-            // Browse for our Multipeer service type (must match Info.plist NSBonjourServices).
-            let browser = NWBrowser(
-                for: .bonjour(type: "_soundpuddle._tcp", domain: nil),
-                using: params
-            )
+            let browser = NWBrowser(for: .bonjour(type: type, domain: nil), using: params)
             browser.stateUpdateHandler = { [weak self] state in
                 Task { @MainActor in
                     switch state {
@@ -45,10 +45,9 @@ final class LocalNetworkPrimer {
             self.browser = browser
             browser.start(queue: .main)
 
-            // Publishing a short-lived listener also forces the permission sheet on iOS 14+.
             do {
                 let listener = try NWListener(using: params)
-                listener.service = NWListener.Service(name: "SoundPuddlePrime", type: "_soundpuddle._tcp")
+                listener.service = NWListener.Service(name: "SoundPuddlePrime", type: type)
                 listener.stateUpdateHandler = { [weak self] state in
                     Task { @MainActor in
                         switch state {
@@ -62,7 +61,7 @@ final class LocalNetworkPrimer {
                 self.listener = listener
                 listener.start(queue: .main)
             } catch {
-                // Browser alone is still enough to surface the prompt.
+                // Browser alone still surfaces the Local Network prompt.
             }
 
             Task { @MainActor in

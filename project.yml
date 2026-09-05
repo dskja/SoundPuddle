@@ -55,7 +55,8 @@ targets:
         NSBonjourServices:
           - _soundpuddle._tcp
           - _soundpuddle._udp
-          - _soundpuddle._udp
+          # LiveContainer host allowlist includes _mqtt._tcp; used by LANBonjourMeshTransport.
+          - _mqtt._tcp
         NSBluetoothAlwaysUsageDescription: Bluetooth hilft, Sessions aufzubauen, wenn kein gemeinsames WLAN verfügbar ist.
         NSMicrophoneUsageDescription: Das Mikrofon wird nur genutzt, wenn du eine Session hostest und Audio teilst.
         UIBackgroundModes:
