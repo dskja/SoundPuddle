@@ -35,6 +35,7 @@ targets:
         GENERATE_INFOPLIST_FILE: false
         LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/Frameworks"
         SWIFT_EMIT_LOC_STRINGS: "YES"
+        ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS: "NO"
     info:
       path: SoundPuddle/Resources/Info.plist
       properties:

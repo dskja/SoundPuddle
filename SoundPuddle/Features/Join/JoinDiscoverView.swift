@@ -34,7 +34,7 @@ struct JoinDiscoverView: View {
                                     Text(item.ad.title)
                                         .font(Theme.bodyMedium)
                                         .foregroundStyle(Theme.textPrimary)
-                                    Text("\(LocalizedStringKey(item.ad.mode.titleKey)) · \(item.peer.displayName)")
+                                    Text("\(String(localized: String.LocalizationValue(item.ad.mode.titleKey))) · \(item.peer.displayName)")
                                         .font(Theme.mono)
                                         .foregroundStyle(Theme.textMuted)
                                 }

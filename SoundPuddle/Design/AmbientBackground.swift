@@ -1,13 +1,12 @@
 import SwiftUI
 
 struct AmbientBackground: View {
-    @State private var phase: CGFloat = 0
     var accent: Color = Theme.lime
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: Motion.reduceMotion ? 1 : 1 / 30)) { timeline in
+        TimelineView(.animation(minimumInterval: Motion.reduceMotion ? 1.0 : 1.0 / 30.0)) { timeline in
             Canvas { context, size in
-                let t = Motion.reduceMotion ? 0 : timeline.date.timeIntervalSinceReferenceDate
+                let t = Motion.reduceMotion ? 0.0 : timeline.date.timeIntervalSinceReferenceDate
                 let rect = CGRect(origin: .zero, size: size)
                 context.fill(Path(rect), with: .linearGradient(
                     Gradient(colors: [Theme.ink, Theme.deep, Theme.well]),
@@ -21,8 +20,9 @@ struct AmbientBackground: View {
                     let yBase = size.height * (0.55 + CGFloat(i) * 0.08)
                     let speed = 0.35 + Double(i) * 0.12
                     path.move(to: CGPoint(x: 0, y: yBase))
-                    for x in stride(from: 0, through: size.width, by: 8) {
-                        let y = yBase + sin((x / 60) + t * speed + Double(i)) * amp
+                    for x in stride(from: CGFloat(0), through: size.width, by: 8) {
+                        let wave = sin(Double(x / 60) + t * speed + Double(i))
+                        let y = yBase + CGFloat(wave) * amp
                         path.addLine(to: CGPoint(x: x, y: y))
                     }
                     path.addLine(to: CGPoint(x: size.width, y: size.height))
