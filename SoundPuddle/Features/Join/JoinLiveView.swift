@@ -20,14 +20,14 @@ struct JoinLiveView: View {
                 .padding(.vertical, 28)
 
             Text(LocalizedStringKey(model.linkQuality.titleKey))
+                .font(Theme.mono)
+                .foregroundStyle(Theme.mist)
+
             if model.isLiveContainer && model.linkQuality != .good {
                 Text(String(localized: "livecontainer.tip.audio"))
                     .font(Theme.mono)
                     .foregroundStyle(Theme.sand)
             }
-
-                .font(Theme.mono)
-                .foregroundStyle(Theme.mist)
 
             if let err = model.lastError {
                 ErrorBanner(message: err)

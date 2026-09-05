@@ -22,16 +22,16 @@ struct HostLiveView: View {
                     .foregroundStyle(Theme.sand)
             }
 
-            if model.linkQuality == .weak
+            if model.linkQuality == .weak {
+                Text(String(localized: "link.weak"))
+                    .font(Theme.mono)
+                    .foregroundStyle(Theme.danger)
+            }
+
             if model.isLiveContainer && model.linkQuality != .good {
                 Text(String(localized: "livecontainer.tip.audio"))
                     .font(Theme.mono)
                     .foregroundStyle(Theme.sand)
-            }
- {
-                Text(String(localized: "link.weak"))
-                    .font(Theme.mono)
-                    .foregroundStyle(Theme.danger)
             }
 
             Text(String(localized: "host.peers"))
