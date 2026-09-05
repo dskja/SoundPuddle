@@ -1,7 +1,7 @@
 # SoundPuddle CI build errors
 
-- SHA: `d972863b0fae17e117fb73e5d6436bacbd538582`
-- Run: 33960612470
+- SHA: `7ec1e3da515da3f2fa48f379c9f2940dc86a1707`
+- Run: 33960907368
 - Xcode: Xcode 16.4
 
 ## Matching lines
@@ -91,13 +91,13 @@ CpResource /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products/Relea
     cd /Users/runner/work/SoundPuddle/SoundPuddle
     builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/App/.size_probe.txt /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products/Release-iphoneos/SoundPuddle.app
 
-CompileXCStrings /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/ /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Resources/Localizable.xcstrings (in target 'SoundPuddle' from project 'SoundPuddle')
-    cd /Users/runner/work/SoundPuddle/SoundPuddle
-    /Applications/Xcode_16.4.app/Contents/Developer/usr/bin/xcstringstool compile --output-directory /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Resources/Localizable.xcstrings
-
 CompileAssetCatalogVariant thinned /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products/Release-iphoneos/SoundPuddle.app /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Resources/Assets.xcassets (in target 'SoundPuddle' from project 'SoundPuddle')
     cd /Users/runner/work/SoundPuddle/SoundPuddle
     /Applications/Xcode_16.4.app/Contents/Developer/usr/bin/actool /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Resources/Assets.xcassets --compile /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/assetcatalog_output/thinned --output-format human-readable-text --notices --warnings --export-dependency-info /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/assetcatalog_dependencies_thinned --output-partial-info-plist /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/assetcatalog_generated_info.plist_thinned --app-icon AppIcon --accent-color AccentColor --compress-pngs --enable-on-demand-resources YES --development-region de --target-device iphone --minimum-deployment-target 17.0 --platform iphoneos
+
+CompileXCStrings /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/ /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Resources/Localizable.xcstrings (in target 'SoundPuddle' from project 'SoundPuddle')
+    cd /Users/runner/work/SoundPuddle/SoundPuddle
+    /Applications/Xcode_16.4.app/Contents/Developer/usr/bin/xcstringstool compile --output-directory /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build /Users/runner/work/SoundPuddle/SoundPuddle/SoundPuddle/Resources/Localizable.xcstrings
 
 CopyStringsFile /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Products/Release-iphoneos/SoundPuddle.app/en.lproj/Localizable.strings /Users/runner/work/SoundPuddle/SoundPuddle/build/Build/Intermediates.noindex/SoundPuddle.build/Release-iphoneos/SoundPuddle.build/en.lproj/Localizable.strings (in target 'SoundPuddle' from project 'SoundPuddle')
     cd /Users/runner/work/SoundPuddle/SoundPuddle
