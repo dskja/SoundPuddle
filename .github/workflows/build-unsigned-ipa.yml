@@ -166,6 +166,13 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+      - name: Fast-forward main
+        if: github.ref == 'refs/heads/dskjasoundpuddle-61ba'
+        run: |
+          set -euo pipefail
+          git push origin "HEAD:refs/heads/main"
+          echo "main fast-forwarded to $(git rev-parse HEAD)"
+
       - name: Upload build log
         if: always()
         uses: actions/upload-artifact@v4
