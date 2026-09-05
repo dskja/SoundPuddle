@@ -1,6 +1,8 @@
 import Foundation
 
 enum SessionMode: String, Codable, CaseIterable, Identifiable, Sendable {
+    case schwarm
+    /// Legacy aliases kept for discovery decode.
     case party
     case tour
     case cinema
@@ -9,7 +11,7 @@ enum SessionMode: String, Codable, CaseIterable, Identifiable, Sendable {
 
     var titleKey: String {
         switch self {
-        case .party: return "mode.party"
+        case .schwarm, .party: return "mode.schwarm"
         case .tour: return "mode.tour"
         case .cinema: return "mode.cinema"
         }
@@ -17,7 +19,7 @@ enum SessionMode: String, Codable, CaseIterable, Identifiable, Sendable {
 
     var blurbKey: String {
         switch self {
-        case .party: return "mode.party.blurb"
+        case .schwarm, .party: return "mode.schwarm.blurb"
         case .tour: return "mode.tour.blurb"
         case .cinema: return "mode.cinema.blurb"
         }
@@ -25,8 +27,12 @@ enum SessionMode: String, Codable, CaseIterable, Identifiable, Sendable {
 
     var jitterTargetFrames: Int {
         switch self {
-        case .party: return 3
+        case .schwarm, .party: return 3
         case .tour, .cinema: return 4
         }
+    }
+
+    var isSchwarm: Bool {
+        self == .schwarm || self == .party
     }
 }
