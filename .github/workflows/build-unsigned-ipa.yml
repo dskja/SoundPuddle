@@ -1,0 +1,108 @@
+name: Build Unsigned IPA
+
+on:
+  push:
+    branches:
+      - main
+      - dskja**
+  workflow_dispatch:
+
+concurrency:
+  group: unsigned-ipa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-unsigned-ipa:
+    name: SoundPuddle unsigned IPA
+    runs-on: macos-15
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          set -euo pipefail
+          echo "Available Xcodes:"
+          ls /Applications | grep -i xcode || true
+          sudo xcode-select -s /Applications/Xcode.app/Contents/Developer || true
+          xcodebuild -version | tee xcode-version.txt
+          xcrun --sdk iphoneos --show-sdk-version | tee ios-sdk-version.txt
+
+
+      - name: Fetch OFL fonts
+        run: |
+          set -euo pipefail
+          mkdir -p SoundPuddle/Fonts
+          curl -fsSL "https://cdn.jsdelivr.net/fontsource/fonts/syne@latest/latin-700-normal.ttf" -o SoundPuddle/Fonts/Syne-Bold.ttf
+          curl -fsSL "https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/latin-400-normal.ttf" -o SoundPuddle/Fonts/IBMPlexSans-Regular.ttf
+          curl -fsSL "https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-sans@latest/latin-500-normal.ttf" -o SoundPuddle/Fonts/IBMPlexSans-Medium.ttf
+          curl -fsSL "https://cdn.jsdelivr.net/fontsource/fonts/ibm-plex-mono@latest/latin-400-normal.ttf" -o SoundPuddle/Fonts/IBMPlexMono-Regular.ttf
+          ls -la SoundPuddle/Fonts
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build Release iphoneos (unsigned)
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -project SoundPuddle.xcodeproj \
+            -scheme SoundPuddle \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            DEVELOPMENT_TEAM="" \
+            CURRENT_PROJECT_VERSION=${{ github.run_number }} \
+            clean build | tee build-unsigned.log
+
+      - name: Package unsigned IPA
+        run: |
+          set -euo pipefail
+          APP="build/Build/Products/Release-iphoneos/SoundPuddle.app"
+          test -d "$APP"
+          rm -rf Payload
+          mkdir Payload
+          cp -R "$APP" Payload/
+          zip -qry SoundPuddle-unsigned.ipa Payload
+          ls -lh SoundPuddle-unsigned.ipa
+          echo "IPA_SIZE=$(wc -c < SoundPuddle-unsigned.ipa | tr -d ' ')" >> "$GITHUB_ENV"
+
+      - name: Job summary
+        run: |
+          {
+            echo "## SoundPuddle unsigned IPA"
+            echo "- SHA: \`${GITHUB_SHA}\`"
+            echo "- Run: ${GITHUB_RUN_NUMBER}"
+            echo "- Xcode: $(head -n1 xcode-version.txt)"
+            echo "- iOS SDK: $(cat ios-sdk-version.txt)"
+            echo "- IPA bytes: ${IPA_SIZE}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SoundPuddle-unsigned-ipa
+          path: SoundPuddle-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: SoundPuddle-unsigned-build-log
+          path: |
+            build-unsigned.log
+            xcode-version.txt
+            ios-sdk-version.txt
+          if-no-files-found: warn
+          retention-days: 14
